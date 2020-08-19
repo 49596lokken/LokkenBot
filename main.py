@@ -40,7 +40,7 @@ async def on_ready():
             if message:
                 break
         if message:
-            await me.edit(nick=f"({findprefix(bot, message)}) LokkenTestBot")
+            await me.edit(nick=f"({findprefix(bot, message)}) {bot.user.name}")
 
 
 @bot.command()
