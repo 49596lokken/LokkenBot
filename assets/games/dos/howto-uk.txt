@@ -1,0 +1,22 @@
+**Dos rules. (UK)**
+
+In this game, you take turns to play your cards until someone runs out and wins. 
+
+After this message, you will see 2 cards placed by the bot. These are the piles. You are allowed to play on each pile once per turn.
+
+When you play, you are allowed to play either a single match or a double match. A single match is where you place a single card which has the same number as the one on the pile. A double match is where you play 2 cards whose numbers add up to the number on the pile you play them on. 
+
+If, in a single match, you also match the colour, you can play an extra card from your hand and it will be a new pile after the turn. 
+
+In a double match, if both your cards are the same colour as the pile, you can play an extra card from your hand as a new pile after the turn and all other players have to pick up a card each
+
+If you are unable to make any matches, you have to pick up a card from the deck.
+
+At the end of the turn, all piles which were played on are discarded then if there are less than two piles, new piles are added until there are 2. Then the cards from colour matches are added as new piles
+
+There are two types of special card, a wild DOS card and wild # cards for each colour
+
+The wild dos card counts as a 2 which can be any colour.
+
+The wild # cards count as any number from 1-10 (no negatives or 0)
+
