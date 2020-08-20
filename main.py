@@ -24,7 +24,7 @@ bot = commands.Bot(command_prefix=findprefix, case_insensitive=True)
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
-    categories = ["games", "useful", "lokkoin"]
+    categories = ["games", "useful", "lokkoin", "tcg"]
     for category in categories:
         try:
             bot.load_extension(f"Categories.{category}")

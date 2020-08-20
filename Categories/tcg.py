@@ -30,6 +30,7 @@ class Tcg(commands.Cog):
 
     @commands.command()
     async def pack(self, ctx):
+        ...
 
 
 def setup(bot):
