@@ -25,7 +25,7 @@ bot = commands.Bot(command_prefix=findprefix, case_insensitive=True)
 @bot.event
 async def on_message(message):
     if len(message.raw_mentions) == 1:
-        if message.mentions[0].user == bot.user:
+        if message.mentions[0] == bot.user:
             await message.channel.send(f"The prefix is \"{findprefix(bot, message)}\"")
 
 @bot.event
