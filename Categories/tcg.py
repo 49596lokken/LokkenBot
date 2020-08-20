@@ -7,7 +7,7 @@ class Tcg(commands.Cog):
         self.bot=bot
         self.common = [chr(i) for i in range(128017, 128080)]
         self.rare = [chr(i) for i in range(128081, 128141)]
-        self.epic = [chr(i) for i in range(128143, 128170)]
+        self.epic = [chr(i) for i in range(128143, 128169)]
         self.legendary = [chr(i) for i in [128016, 128081, 128142, 128169]]
 
     @commands.command()
