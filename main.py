@@ -5,7 +5,10 @@ from checks import *
 def findprefix(bot, message):
     if not message.guild:
         return("")
-    default_prefix = "%"
+    if bot.user.name == "LokkenTestBot":
+        default_prefix = "^"
+    else:
+        default_prefix = "%"
     f = open("prefixes", "r")
     for line in f:
         if line[:line.index(":")] == str(message.guild.id):
@@ -19,12 +22,17 @@ def findprefix(bot, message):
 
 bot = commands.Bot(command_prefix=findprefix, case_insensitive=True)
 
+@bot.event
+async def on_message(message):
+    if len(message.raw_mentions) == 1:
+        if message.mentions[0].user == bot.user:
+            await message.channel.send(f"The prefix is \"{findprefix(bot, message)}\"")
 
 @bot.event
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
-    categories = ["games", "useful", "lokkoin", "tcg"]
+    categories = ["games", "useful", "lokkoin", "tcg", "management"]
     for category in categories:
         try:
             bot.load_extension(f"Categories.{category}")
