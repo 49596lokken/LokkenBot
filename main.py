@@ -27,6 +27,12 @@ async def on_message(message):
     if len(message.raw_mentions) == 1:
         if message.mentions[0] == bot.user:
             await message.channel.send(f"The prefix is \"{findprefix(bot, message)}\"")
+    await bot.process_commands(message)
+
+
+@bot.event
+async def on_command_error(ctx, exception):
+    await ctx.send(exception)
 
 @bot.event
 async def on_ready():

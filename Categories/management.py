@@ -15,7 +15,11 @@ class Cog(commands.Cog):
         for i in range(len(prefixes)):
             if prefixes[i][:prefixes[i].index(":")] == str(ctx.guild.id):
                 prefixes[i] == f"{ctx.guild.id}:{new_prefix}"
-
+                await ctx.send("Prefix changed")
+        output = ""
+        for guild in prefixes:
+            output += f"{guild}\n"
+        f.write(output)
 
 
 def setup(bot):
