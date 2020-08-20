@@ -8,8 +8,14 @@ class Cog(commands.Cog):
 
 
     @commands.command()
-    async def change_prefix(self):
-        
+    @commands.has_permissions(manage_messages=True)
+    async def change_prefix(self, ctx, new_prefix):
+        f = open("prefixes", "r")
+        prefixes = f.read().split("\n")
+        for i in range(len(prefixes)):
+            if prefixes[i][:prefixes[i].index(":")] == str(ctx.guild.id):
+                prefixes[i] == f"{ctx.guild.id}:{new_prefix}"
+
 
 
 def setup(bot):
