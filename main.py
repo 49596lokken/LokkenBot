@@ -32,7 +32,7 @@ async def on_message(message):
 
 @bot.event
 async def on_command_error(ctx, exception):
-    await ctx.send(exception)
+    await ctx.send(exception.args[0])
 
 @bot.event
 async def on_ready():
@@ -87,9 +87,7 @@ async def load(ctx, cog_name):
 
 
 
-async def on_command_error(ctx, error):
-    await ctx.send(str(error))
-    print(error)
+
 
 
 
