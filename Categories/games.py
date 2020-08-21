@@ -11,11 +11,6 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         self.dos_class = Dos()
-        for emoji in self.bot.get_guild(721340744207695903).emojis:
-            if emoji.name.lower() == "cardback":
-                self.dos_class.cardback = str(emoji)
-            else:
-                self.dos_class.cards[emoji.name.lower().replace("_", "#")] = str(emoji)
         self.xo_channels = {}
         self.c4_channels = {}
 
@@ -24,6 +19,16 @@ class Games(commands.Cog):
         if ctx.guild:
             return(f"{ctx.guild.id} {ctx.channel.id}")
         return(None)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        for emoji in self.bot.get_guild(721340744207695903).emojis:
+            if emoji.name.lower() == "cardback":
+                self.dos_class.cardback = str(emoji)
+            else:
+                self.dos_class.cards[emoji.name.lower().replace("_", "#")] = str(emoji)
+        
+
 
 #DOS - made originally by Matel
     @commands.group(pass_context=True,invoke_without_command=True)

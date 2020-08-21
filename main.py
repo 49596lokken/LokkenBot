@@ -30,21 +30,14 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-@bot.event
-async def on_command_error(ctx, exception):
-    await ctx.send(exception.args[0])
+# @bot.event
+# async def on_command_error(ctx, exception):
+#     await ctx.send(exception.args[0])
 
 @bot.event
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
-    categories = ["games", "useful", "lokkoin", "tcg", "management"]
-    for category in categories:
-        try:
-            bot.load_extension(f"Categories.{category}")
-        except Exception as e:
-            print(e)
-    
     for guild in bot.guilds:
         me = guild.me
         for text_channel in guild.text_channels:
@@ -55,6 +48,15 @@ async def on_ready():
                 break
         if message:
             await me.edit(nick=f"({findprefix(bot, message)}) {bot.user.name}")
+
+categories = ["games", "useful", "lokkoin", "tcg", "management"]
+for category in categories:
+    try:
+        bot.load_extension(f"Categories.{category}")
+    except Exception as e:
+        print(e)
+    
+    
 
 
 @bot.command()

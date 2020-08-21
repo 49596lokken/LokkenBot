@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 import random
+import asyncio
+
 
 class Tcg(commands.Cog):
     def __init__(self, bot):
@@ -72,10 +74,7 @@ class Tcg(commands.Cog):
         inventory = self.get_inventory(player)
         for card in cards:
             inventory.remove(card)
-            self.update_inventory(self, cards)
-
-    def is_card(self,card):
-        return(card in self.cards)
+            self.update_inventory(player, inventory)
 
     
 
@@ -173,36 +172,87 @@ class Tcg(commands.Cog):
     async def trade(self, ctx, friend: commands.MemberConverter, *args):
         args = [arg.lower() for arg in args]
         if not "for" in args:
-            await ctx.send("You need to include for as one of the arguments")
+            await ctx.send("You need to include \"for\" as one of the arguments")
             return
         giving = args[:args.index("for")]
-        taking = args[args.index("for")+1:]
-        given_lokkoin = False
+        getting = args[args.index("for")+1:]
+        lokkoin_transaction = []
         lokkoin = self.bot.get_cog("lokkoin")
         inventory = self.get_inventory(str(ctx.author.id))[:]
         for card in giving:
-            if card.isdigit:
-                if given_lokkoin:
-                    await ctx.send("You already specified an amount of lokkoin to give")
+            if card.isdigit():
+                if lokkoin_transaction:
+                    await ctx.send("There is already lokkoin in this trade. Cancelling")
                     return
-                given_lokkoin = True
-                balance = lokkoin.get_balance(ctx.author.id)
+                lokkoin_transaction = [int(card), str(ctx.author.id)]
+                balance = await lokkoin.get_balance(str(ctx.author.id))
                 if not balance:
                     await ctx.send("You have no balance try register or make more money")
                     return
                 if balance < int(card):
-                    await ctx.send("You don't have that kind of money... transaction cancelled")
+                    await ctx.send("You don't have that much money... trade cancelled")
                     return
+                giving.remove(card)
                 break
             if not card in self.cards:
-                await ctx.send(f"{card} is not a card. Cancelling transaction")
+                await ctx.send(f"{card} is not a card. Cancelling trade")
                 return
             card_num = self.cards.index(card)
             if not card_num in inventory:
                 await ctx.send(f"You do not have the card {card} in your inventory")
                 return
             inventory.remove(card_num)
+        inventory = self.get_inventory(str(friend.id))[:]
+        for card in getting:
+            if card.isdigit():
+                if lokkoin_transaction:
+                    await ctx.send("There is already lokkoin in this trade")
+                    return
+                lokkoin_transaction = [int(card), str(ctx.author.id)]
+                balance = await lokkoin.get_balance(str(friend.id))
+                if not balance:
+                    await ctx.send("Your has no balance. They should try register or make more money")
+                    return
+                if balance < int(card):
+                    await ctx.send("Your friend doesn't have that much money... trade cancelled")
+                    return
+                getting.remove(card)
+                break
+            if not card in self.cards:
+                await ctx.send(f"{card} is not a card. Cancelling trade")
+                return
+            card_num = self.cards.index(card)
+            if not card_num in inventory:
+                await ctx.send(f"Your does not have the card {card} in their inventory")
+                return
+            inventory.remove(card_num)
 
+        output = ""
+        for arg in args:
+            output += f"{arg}, "
+        confirmation = await friend.send(f"Player {ctx.author.name}#{ctx.author.discriminator} has requested a trade with you. They want to give you {output}\nTo confirm this trade, react with a \u2705")
+        await confirmation.add_reaction("\u2705")
+        confirmation = await friend.fetch_message(confirmation.id)
+        def check(reaction, user):
+            return(str(reaction.emoji) == "\u2705" and user == friend and reaction.message.id==confirmation.id)
+        try:
+            await self.bot.wait_for("reaction_add", check=check, timeout=20.0)
+            if lokkoin_transaction:
+                if lokkoin_transaction[1] == str(ctx.author.id):
+                    await lokkoin.remove_coins(str(ctx.author.id), lokkoin_transaction[0])
+                    await lokkoin.add_coins(str(friend.id), lokkoin_transaction[0])
+                else:
+                    await lokkoin.remove_coins(str(friend.id), lokkoin_transaction[0])
+                    await lokkoin.add_coins(str(ctx.author.id), lokkoin_transaction[0])
+            giving = [self.cards.index(card) for card in giving]
+            getting = [self.cards.index(card) for card in getting]
+            self.remove_cards(str(ctx.author.id), giving)
+            self.add_cards(str(friend.id), giving)
+            self.remove_cards(str(friend.id), getting)
+            self.add_cards(str(ctx.author.id), getting)
+            await ctx.send("Done - The trade went through")
+        except asyncio.TimeoutError:
+            await ctx.send("Your friend didn't react in time.")
 
 
 
