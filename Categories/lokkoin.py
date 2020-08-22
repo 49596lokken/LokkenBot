@@ -6,7 +6,7 @@ import random
 class lokkoin(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
-        f = open("assets/lokkoin/balances", "r")
+        f = open("data/lokkoin/balances", "r")
         self.balances = {i[:i.index(" ")]:int(i[i.index(" "):-1]) for i in f}
         f.close()
         self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F48E", "\U0001F34B"]
@@ -21,7 +21,7 @@ class lokkoin(commands.Cog):
         output = ""
         for user in self.balances:
             output += f"{user} {self.balances[user]}\n"
-        f = open("assets/lokkoin/balances", "w+")
+        f = open("data/lokkoin/balances", "w+")
         f.write(output)
         f.close()
 
@@ -30,7 +30,7 @@ class lokkoin(commands.Cog):
         output = ""
         for user in self.balances:
             output += f"{user} {self.balances[user]}\n"
-        f = open("assets/lokkoin/balances", "w+")
+        f = open("data/lokkoin/balances", "w+")
         f.write(output)
         f.close()
 
@@ -47,7 +47,7 @@ class lokkoin(commands.Cog):
         if str(ctx.author.id) in self.balances:
             await ctx.send("You are already registered")
             return
-        f = open("assets/lokkoin/balances", "a")
+        f = open("data/lokkoin/balances", "a")
         f.write(f"{ctx.author.id} 200\n")
         self.balances[str(ctx.author.id)] = 200
         await ctx.send("Successfully registered. Your balance is 200 lokkoins!")

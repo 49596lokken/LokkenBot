@@ -4,7 +4,7 @@ class Dos:
     def __init__(self):
         self.games = {}
         self.cards = {}
-        channels=open("assets/games/dos/channels", "r")
+        channels=open("data/games/dos/channels", "r")
         for channel in channels:
             self.games[channel[:-1]] = None
         channels.close()
@@ -22,7 +22,7 @@ class Dos:
             return("Already a dos channel")
         else:
             self.games[channel] = None
-            channels=open("assets/games/dos/channels", "a")
+            channels=open("data/games/dos/channels", "a")
             channels.write(channel+"\n")
             return("The channel is now a dos channel")
 

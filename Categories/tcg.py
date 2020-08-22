@@ -16,7 +16,7 @@ class Tcg(commands.Cog):
 
     def get_inventory(self, player):
         inventory = None
-        f = open("assets/tcg/inventories", "r")
+        f = open("data/tcg/inventories", "r")
         for line in f:
             if line[:line.index(":")] == player:
                 inventory = line[:- 1]
@@ -45,7 +45,7 @@ class Tcg(commands.Cog):
         return(inventory)
 
     def update_inventory(self, player, inventory):
-        f = open("assets/tcg/inventories", "r")
+        f = open("data/tcg/inventories", "r")
         all_inventories = f.read().split("\n")[:-1]
         output = ""
         for line_num in range(len(all_inventories)):
@@ -54,14 +54,14 @@ class Tcg(commands.Cog):
                 for card in inventory:
                     all_inventories[line_num] += f" {card}"
             output += all_inventories[line_num]+"\n"
-        f=open("assets/tcg/inventories", "w")
+        f=open("data/tcg/inventories", "w")
         f.write(output)
         f.close()
 
     def add_cards(self, player, cards: list):
         inventory = self.get_inventory(player)
         if inventory==None:
-            f=open("assets/tcg/inventories", "a")
+            f=open("data/tcg/inventories", "a")
             f.write(f"{player}:\n")
             inventory = []
         for card in cards:
