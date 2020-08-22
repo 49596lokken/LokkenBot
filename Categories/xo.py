@@ -18,7 +18,7 @@ class Games(commands.Cog):
         ...
 
     @xo.command(description="Starts a noughts and crosses with a specified person", brief="author of message starts", name="start")
-    async def xo_start(self, ctx, opponent: commands.MemberConverter, wager=0):
+    async def start(self, ctx, opponent: commands.MemberConverter, wager=0):
         wager = int(wager)
         if not ctx.guild:
             await ctx.send("This can only happen in a server")
