@@ -1,10 +1,6 @@
 import discord
 from discord.ext import commands
-from assets.games.dos.classes import *
-from assets.games.xo.classes import *
-from assets.games.c4.classes import *
 import random
-import asyncio
 
 
 class Games(commands.Cog):
@@ -20,17 +16,7 @@ class Games(commands.Cog):
             return(f"{ctx.guild.id} {ctx.channel.id}")
         return(None)
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        for emoji in self.bot.get_guild(721340744207695903).emojis:
-            if emoji.name.lower() == "cardback":
-                self.dos_class.cardback = str(emoji)
-            else:
-                self.dos_class.cards[emoji.name.lower().replace("_", "#")] = str(emoji)
-        
 
-
-#DOS - made originally by Matel
     @commands.group(pass_context=True,invoke_without_command=True)
     async def dos(self, ctx):
         ...
@@ -255,206 +241,161 @@ class Games(commands.Cog):
         await ctx.author.send(game.get_player(ctx.author).get_hand())
 
 
-#Nougths and crosses
-    @commands.group(pass_context=True,invoke_without_command=True)
-    async def xo(self, ctx):
-        ...
+class Dos:
+    def __init__(self):
+        self.games = {}
+        self.cards = {}
+        channels=open("data/games/dos/channels", "r")
+        for channel in channels:
+            self.games[channel[:-1]] = None
+        channels.close()
 
-    @xo.command(description="Starts a noughts and crosses with a specified person", brief="author of message starts", name="start")
-    async def xo_start(self, ctx, opponent: commands.MemberConverter, wager=0):
-        wager = int(wager)
-        if not ctx.guild:
-            await ctx.send("This can only happen in a server")
-            return
-        if not opponent in ctx.guild.members:
-            await ctx.send("Person is not in the server")
-        channel = self.get_channel(ctx)
-        new_game = XoGame([ctx.author.id, opponent.id], wager)
-        if channel in self.xo_channels:
-            xo_channel = self.xo_channels[channel]
-            for game in xo_channel:
-                if ctx.author.id in game.players or opponent.id in game.players:
-                    await ctx.send("One of you is already playing in this channel")
-                    return
-            xo_channel.append(new_game)
+    def get_game(self, channel):
+        if not channel in self.games:
+            return(None)
+        return(self.games[channel])
+        
+
+    def enable(self, channel):
+        if not channel:
+            return("Please do this in a guild")
+        if channel in self.games:
+            return("Already a dos channel")
         else:
-            self.xo_channels[channel] = [new_game]
-        if wager != 0:
-            confirmation = await ctx.send(f"{opponent.mention}, react to this message with \u2705 within 10 seconds to confirm the wager of {wager} lokkoins")
-            await confirmation.add_reaction("\u2705")
-            def check(reaction, user):
-                return(str(reaction.emoji) == "\u2705" and user == opponent)
-            confirmation = await ctx.channel.fetch_message(confirmation.id)
-            try:
-                reaction, user = await self.bot.wait_for("reaction_add", timeout=10.0, check=check)
-            except asyncio.TimeoutError:
-                await ctx.send("Wager cancelled.")
-                wager = 0
-        if wager != 0:
-            lokkoin = self.bot.get_cog("lokkoin")
-            if lokkoin:
-                balances = [await lokkoin.get_balance(str(ctx.author.id)), await lokkoin.get_balance(str(opponent.id))]
-                if balances[0] and balances[1]:
-                    if balances[0] > wager and balances[1] > wager:
-                        await lokkoin.remove_coins(str(ctx.author.id), wager)
-                        await lokkoin.remove_coins(str(opponent.id), wager)
-                    else:
-                        await ctx.send("One or more of the players have insufficient funds for that")
-                else:
-                    await ctx.send("one or more of the players aren't registered for lokkoins")
-            else:
-                await ctx.send("Sorry, lokkoin isn't working right now so you cannot have that wager in this game")
-        await ctx.send(f"Game between {ctx.author.mention} and {opponent.mention} started!")
-        await ctx.send(new_game.get_board())
+            self.games[channel] = None
+            channels=open("data/games/dos/channels", "a")
+            channels.write(channel+"\n")
+            return("The channel is now a dos channel")
 
-    @xo.command(description="Plays in a game of noughts and crosses", name="play")
-    async def xo_play(self, ctx, place):
-        if not ctx.guild:
-            await ctx.send("This can only happen in a server")
-            return
-        channel = self.get_channel(ctx)
-        if not channel in self.xo_channels:
-            await ctx.send("No games of noughts and crosses here")   
-            return
-        playing = False
-        for game in self.xo_channels[channel]:
-            if ctx.author.id in game.players:
-                playing = True
-                break
-        if not playing:
-            await ctx.send("Sorry, you are not in a game here")
-            return
-        turns_taken = 0
-        for tile in game.board:
-            if not tile.isdigit():
-                turns_taken += 1
-        
-        if not (game.players.index(ctx.author.id) == turns_taken%2):
-            await ctx.send("Wait yor turn")
-            return
-        
-        if not (place in game.board and place.isdigit()):
-            await ctx.send(f"\"{place}\" isn't a valid place")
-            return
-        game.board[game.board.index(place)] = ["X", "O"][game.players.index(ctx.author.id)]
-        await ctx.send(game.get_board())
-        if game.check_win():
-            await ctx.send(f"Well done {ctx.author.mention} you won!")
-            if game.wager != 0:
-                await ctx.send(f"{ctx.author.display_name} just won {game.wager*2} coins from the wager!")
-                lokkoin = await self.bot.get_cog("lokkoin")
-                await lokkoin.add_coins(str(ctx.author.id), game.wager*2)
-            if len(self.xo_channels[channel]) == 1:
-                del self.xo_channels[channel]
-                return
-            else:
-                self.xo_channels[channel].remove(game)
-                return
-        if turns_taken == 8:
-            lokkoin = await self.bot.get_cog("lokkoin")
-            await ctx.send("It's a draw. Refunding wager")
-            for player in game.players:
-                await lokkoin.add_coins(str(player), game.wager)
-            if len(self.xo_channels[channel]) == 1:
-                del self.xo_channels[channel]
-                return
-            else:
-                self.xo_channels[channel].remove(game)
-                return
+    def ready(self, channel):
+        if not channel in self.games:
+            return("Dos has not been enabled in this channel")
+        if self.games[channel]:
+            return("There is already a waiting game")
+        self.games[channel] = DosGame(self)
+        return("Game ready")
 
-#Connect 4
-    @commands.group(pass_context=True,invoke_without_command=True)
-    async def c4(self, ctx):
-        ...
+    def disable(self, channel):
+        if channel in self.games:
+            del self.games[channel]
+            return("No longer a dos channel")
+        else:
+            return("This isn't a dos channel")
+
+
+    def is_card(self, card):
+        return card in self.cards
+
+    def get_card(self, card):
+        return self.cards[card]
+
+
+class DosGame:
+    def __init__(self, dos):
+        self.dos = dos
+        self.deck = []
+        duplicates = 3
+        for card in dos.cards:
+            if card[1] == "6":
+                duplicates = 2
+            elif card == "dos":
+                duplicates = 12
+            for i in range(duplicates):
+                self.deck.append(card)
+        self.players = {}
+        self.started = False
+        self.turn = 0
+        self.start_id = 0
+        self.start_author = None
+        self.discards = []
+        self.centre_row = []
+        self.colour_matches = 0
+        self.rules = ""
+        self.played = False
+        self.can_play = True
     
-    @c4.command(name="start")
-    async def c4_start(self, ctx, opponent: commands.MemberConverter, wager=0):
-        wager = int(wager)
-        if not ctx.guild:
-            await ctx.send("This can only happen in a server")
-            return
-        if not opponent in ctx.guild.members:
-            await ctx.send("Person is not in the server")
-        channel = self.get_channel(ctx)
-        new_game = C4Game([ctx.author, opponent], wager)
-        if channel in self.c4_channels:
-            xo_channel = self.c4_channels[channel]
-            for game in xo_channel:
-                if ctx.author.id in game.players or opponent.id in game.players:
-                    await ctx.send("One of you is already playing in this channel")
-                    return
-            xo_channel.append(new_game)
+    def current_player(self):
+        return(list(iter(self.players))[self.turn % len(self.players)])
+
+    def get_player(self, player):
+        if player in self.players:
+            return(self.players[player])
+        return None
+
+    def card_in_deck(self, card):
+        return (card in self.deck)
+    
+    def reshuffle(self):
+        random.shuffle(self.discards)
+        self.deck=self.discards[:]
+        self.discards = []
+
+    def get_centre_row(self):
+        if len(self.centre_row) == 0:
+            return("The centre row is empty")
+        output = ""
+        for card in self.centre_row:
+            output += self.dos.get_card(card)
+        return(output)
+    
+    def is_match(self, played_cards):
+        cards = played_cards[:]
+        if len(cards) == 2:
+            return([cards[0][1]==cards[1][1] or "#" in cards[0][1]+cards[1][1], cards[0][0] == cards[1][0] or "dos" in cards])
         else:
-            self.c4_channels[channel] = [new_game]
-        if wager != 0:
-            confirmation = await ctx.send(f"{opponent.mention}, react to this message with \u2705 within 10 seconds to confirm the wager of {wager} lokkoins")
-            await confirmation.add_reaction("\u2705")
-            def check(reaction, user):
-                return(str(reaction.emoji) == "\u2705" and user == opponent)
-            confirmation = await ctx.channel.fetch_message(confirmation.id)
-            try:
-                reaction, user = await self.bot.wait_for("reaction_add", timeout=10.0, check=check)
-            except asyncio.TimeoutError:
-                await ctx.send("Wager cancelled.")
-                wager = 0
-        if wager != 0:
-            lokkoin = self.bot.get_cog("lokkoin")
-            if lokkoin:
-                balances = [await lokkoin.get_balance(str(ctx.author.id)), await lokkoin.get_balance(str(opponent.id))]
-                if balances[0] and balances[1]:
-                    if balances[0] > wager and balances[1] > wager:
-                        await lokkoin.remove_coins(str(ctx.author.id), wager)
-                        await lokkoin.remove_coins(str(opponent.id), wager)
-                    else:
-                        await ctx.send("One or more of the players have insufficient funds for that")
+            #makes dos cards into 2s
+            while "dos" in cards:
+                if cards.index("dos") != 2:
+                    if cards[2] == "dos":
+                        return([False, False])
+                    cards[cards.index("dos")] = cards[2][0]+"2"
                 else:
-                    await ctx.send("one or more of the players aren't registered for lokkoins")
+                    cards[2] = cards[0][0]+"2"
+            #deals with wild # cards
+            possible_sums=[]
+            if cards[0][1].isdigit():
+                if cards[1][1].isdigit():
+                    possible_sums = [int(cards[0][1:])+int(cards[1][1:])]
+                else:
+                    possible_sums = [i+1 for i in range(int(cards[0][1:]), 10)]
             else:
-                await ctx.send("Sorry, lokkoin isn't working right now so you cannot have that wager in this game")
-        await ctx.send(f"Game between {ctx.author.mention} and {opponent.mention} started!")
-        await ctx.send(f"{new_game.players[new_game.turn%2].mention} It's your turn")
-        await ctx.send(new_game.get_board())
-
-    @c4.command(name="play")
-    async def c4_play(self, ctx, column: int):
-        if not ctx.guild:
-            await ctx.send("Please use this command in a guild")
-            return
-        channel = self.get_channel(ctx)
-        if not channel in self.c4_channels:
-            await ctx.send("No games of connect 4 here")   
-            return
-        playing = False
-        for game in self.c4_channels[channel]:
-            if ctx.author in game.players:
-                playing = True
-                break
-        if not playing:
-            await ctx.send("Sorry, you are not in a game here")
-            return
-        if not ctx.author == game.players[game.turn%2]:
-            await ctx.send("It isn't your turn")
-            return
-        if column > 7 or column < 1:
-            await ctx.send("Invalid column")
-            return
-        try:
-            game.play(column, ctx.author)
-            game.turn += 1
-            if game.check_win():
-                await ctx.send(f"{ctx.author.mention} you win!")
-                return
-            if game.turn == 42:
-                await ctx.send("Game was a draw")
-            await ctx.send(f"{game.players[game.turn%2].mention} It's your turn")
-            await ctx.send(game.get_board())
-        except C4Error:
-            await ctx.send("Unable to play there")
-
-                
+                if cards[1][1].isdigit():
+                    possible_sums = [i+1 for i in range(int(cards[1][1:]), 10)]
+                else:
+                    possible_sums = [i+1 for i in range(1, 10)]
+            output = []
+            if cards[2][1].isdigit():
+                if int(cards[2][1:]) in possible_sums:
+                    output.append(True)
+            elif len(possible_sums) != 0:
+                output.append(True)
+            else:
+                return([False, False])
+            output.append(cards[0][0]==cards[1][0] and cards[0][0] == cards[2][0])
+            return(output)
             
-     
+        
+class DosPlayer:
+    def __init__(self, game):
+        self.game = game
+        self.hand=[]
+        
     
+    def draw_card(self):
+        if len(self.game.deck) == 0:
+            self.game.reshuffle()
+        card = random.choice(self.game.deck)
+        self.game.deck.remove(card)
+        self.hand.append(card)
+
+    def get_hand(self):
+        if len(self.hand) == 0:
+            return("You have no cards")
+        output = ""
+        for card in self.hand:
+            output += self.game.dos.get_card(card)
+        return(output)
+
 
 def setup(bot):
     bot.add_cog(Games(bot))

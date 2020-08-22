@@ -5,7 +5,7 @@ import aiohttp
 import random
 import os
 
-class Cog(commands.Cog):
+class maths(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         f=open("reddit", "r")
@@ -43,4 +43,4 @@ class Cog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Cog(bot))
+    bot.add_cog(maths(bot))

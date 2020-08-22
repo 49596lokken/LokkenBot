@@ -38,18 +38,8 @@ async def on_command_error(ctx, exception):
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
-    for guild in bot.guilds:
-        me = guild.me
-        for text_channel in guild.text_channels:
-            
-            message_id = text_channel.last_message_id
-            message = await text_channel.fetch_message(message_id)
-            if message:
-                break
-        if message:
-            await me.edit(nick=f"({findprefix(bot, message)}) {bot.user.name}")
-
-categories = ["games", "useful", "lokkoin", "tcg", "management", "maths"]
+    await bot.change_presence(activity=discord.Game("ping me for prefix"))
+categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths"]
 for category in categories:
     try:
         bot.load_extension(f"Categories.{category}")
