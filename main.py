@@ -30,16 +30,12 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-# @bot.event
-# async def on_command_error(ctx, exception):
-#     await ctx.send(exception.args[0])
-
 @bot.event
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
-categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng"]
+categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh"]
 for category in categories:
     try:
         bot.load_extension(f"Categories.{category}")
