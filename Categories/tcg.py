@@ -64,6 +64,7 @@ class Tcg(commands.Cog):
             f=open("data/tcg/inventories", "a")
             f.write(f"{player}:\n")
             inventory = []
+            f.close()
         for card in cards:
             inventory.append(card)
         inventory = self.sort_inventory(inventory)
