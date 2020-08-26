@@ -17,6 +17,15 @@ class Games(commands.Cog):
         return(None)
 
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.dos_class.cards = {}
+        for emoji in self.bot.get_guild(721340744207695903).emojis:
+            if emoji.name.lower() == "cardback":
+                self.dos_class.cardback = str(emoji)
+            else:
+                self.dos_class.cards[emoji.name.lower().replace("_", "#")] = str(emoji)
+
     @commands.group(pass_context=True,invoke_without_command=True)
     async def dos(self, ctx):
         ...
