@@ -20,7 +20,7 @@ class Games(commands.Cog):
             return
         if lowest > highest:
             await ctx.send("Your numbers are the wrong way around")
-        await ctx.send(f"I am thinking of a number. It is between {lowest} and {highest}. If you are able to guess my number in under {int((highest-lowest)**0.5)} tries, You will get 100 lokkoins")
+        await ctx.send(f"I am thinking of a number. It is between {lowest} and {highest}. If you are able to guess my number in under {int((highest-lowest)**0.5)-1} tries, You will get 100 lokkoins")
         self.games[ctx.author] = RngGame(random.randint(lowest, highest), int((highest-lowest)**0.58)-1)
 
     @rng.command()
