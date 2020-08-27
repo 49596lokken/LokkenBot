@@ -20,8 +20,8 @@ class Games(commands.Cog):
             return
         if lowest > highest:
             await ctx.send("Your numbers are the wrong way around")
-        await ctx.send(f"I am thinking of a number. It is between {lowest} and {highest}. If you are able to guess my number in under {(highest-lowest)//8} tries, You will get 100 lokkoins")
-        self.games[ctx.author] = RngGame(random.randint(lowest, highest), (highest-lowest)//8)
+        await ctx.send(f"I am thinking of a number. It is between {lowest} and {highest}. If you are able to guess my number in under {int((highest-lowest)**0.5)} tries, You will get 100 lokkoins")
+        self.games[ctx.author] = RngGame(random.randint(lowest, highest), int((highest-lowest)**0.58)-1)
 
     @rng.command()
     async def guess(self, ctx, guess: int):
@@ -29,6 +29,7 @@ class Games(commands.Cog):
             await ctx.send("You are not playing now")
             return
         game = self.games[ctx.author]
+        game.tries += 1
         if guess < game.number:
             await ctx.send("Too low")
         elif guess > game.number:
@@ -40,6 +41,11 @@ class Games(commands.Cog):
                 if lokkoin.balance(str(ctx.author.id)) != None:
                     await lokkoin.add_coins(str(ctx.author.id), 100)
                     await ctx.send("You are now 100 lokkoins richer. Spend them wisely")
+                    del self.games[ctx.author]
+                    return
+        if game.tries > game.tries_for_lokkoins:
+            await ctx.send("You lose!")
+            del self.games[ctx.author]
         
 
 class RngGame:
