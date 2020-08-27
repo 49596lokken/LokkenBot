@@ -8,13 +8,26 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         self.pieces = ["\U0001F534", "\U0001F7E2", "\U0001F535", "\U0001F7E1", "\U0001F7E3", "\U000026AA"]
+        self.codes = ["r", "g", "b", "y", "p", "w"]
         self.indicators = ["\u25AA", "\u25AB"]
         self.games = {}
+        temp = [f"{self.pieces[i]} ({self.codes[i]})\n" for i in range(len(self.pieces))]
+        self.valid_pieces = ""
+        for line in temp:
+            self.valid_pieces += line
 
     @commands.group(pass_context=True,invoke_without_command=True)
     async def master(self,ctx):
         ...
     
+    def validate_piece(self, piece):
+        if piece in self.codes:
+            piece = self.pieces[self.codes.index(piece)]
+        if piece in self.pieces:
+            return(piece)
+        else:
+            raise(InvalidPiece)
+
     @master.command()
     async def start(self, ctx, opponent: commands.MemberConverter):
         
@@ -29,15 +42,24 @@ class Games(commands.Cog):
         if opponent in self.games:
             await ctx.send(f"{opponent.display_name} is already in a game!")
             return
-        await ctx.author.send(f"As you started the game, you get to make the code. Please enter the code without any spaces or extra characters. You are allowed to use{self.pieces}")
+        await ctx.author.send(f"As you started the game, you get to make the code. Please enter the code without any spaces or extra characters. You are allowed to use:\n{self.valid_pieces}")
+        self.games[opponent] = MasterMindGame(None , ctx.author)
         def check(message):
-            return([char in self.pieces for char in message.content] == [True for i in range(4)] and message.author==ctx.author)
+            if len(message.content) != 4:
+                return False
+            message.content = [i for i in message.content]
+            try:
+                for i in range(len(message.content)):
+                    message.content[i]=self.validate_piece(message.content[i])
+                return(True)
+            except InvalidPiece:
+                return(False)
         try:
             message = await self.bot.wait_for("message", check=check, timeout=60.0)
         except asyncio.TimeoutError:
             await ctx.send("You waited too long. Game cancelled")
             return
-        self.games[opponent] = MasterMindGame([message.content[i] for i in range(4)], ctx.author)
+        self.games[opponent].code = [message.content[i] for i in range(4)]
         await ctx.send("Game started")
     
     @master.command()
@@ -46,9 +68,16 @@ class Games(commands.Cog):
             await ctx.send("You are not currently guessing in a game")
             return
         game = self.games[ctx.author]
-        if [char in self.pieces for char in guess] != [True for i in range(4)]:
-            await ctx.send(f"Please send 4 valid emojis. Valid emojis are {self.pieces}")
+        if not game.code:
+            await ctx.send("Your opponent hasn't set the code yet")
             return
+        guess = [char for char in guess]
+
+        try:
+            for i in range(len(guess)):
+                guess[i] = self.validate_piece(guess[i])
+        except InvalidPiece:
+            await ctx.send(f"Invalid piece. You are only allowed to use:\n{self.valid_pieces}")
         output = []
         temp_code = game.code[:]
         blacks = 0
@@ -96,8 +125,6 @@ class Games(commands.Cog):
 
         
         
-    
-        
 
 class MasterMindGame:
     def __init__(self, code, opponent):
@@ -105,6 +132,9 @@ class MasterMindGame:
         self.turns_taken = 0
         self.opponent = opponent
         self.board = ""
+    
+class InvalidPiece(Exception):
+    ...
 
 
 

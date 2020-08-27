@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import asyncio
-
+import typing
 
 class Tcg(commands.Cog):
     def __init__(self, bot):
@@ -102,16 +102,16 @@ class Tcg(commands.Cog):
     @commands.command()
     async def allcards(self, ctx):
         output = ""
-        output += "common\n"
+        output += "**__common__**\n"
         for card in self.common:
-            output += card
-        output += "\nrare\n"
+            output += f"{card} ({self.cards.index(card)})\n"
+        output += "\n**__rare__**\n"
         for card in self.rare:
             output += card
-        output += "\nepic\n"
+        output += "\n**__epic__**\n"
         for card in self.epic:
             output += card
-        output += "\nlegendary\n"
+        output += "\n**__legendary__**\n"
         for card in self.legendary:
             output += card
         await ctx.send(output)
@@ -140,36 +140,54 @@ class Tcg(commands.Cog):
         await lokkoin.remove_coins(str(ctx.author.id), 50)
 
     @commands.command()
-    async def inventory(self, ctx):
-        inventory = self.get_inventory(str(ctx.author.id))
+    async def inventory(self, ctx, player: typing.Optional[commands.MemberConverter] = None):
+        if not player:
+            player = ctx.author
+        inventory = self.get_inventory(str(player.id))
         if not inventory:
-            await ctx.send("You don't have any cards")
+            await ctx.send(f"{player.display_name} doesn't have any cards")
             return
         inventory = [self.cards[i] for i in inventory]
-        had_common, had_rare, had_epic, had_legendary = False, False, False, False
-        output = ""
+        e = discord.Embed(title=f"Inventory of {player.name}",description=f"{len(inventory)} cards")
+        common, rare, epic, legendary = "\n", "\n", "\n", "\n"
         for card in inventory:
             if card in self.common:
-                if not had_common:
-                    had_common = True
-                    output += "common:\n"
+                if common[-1] == card or common[-1] == "\n":
+                    common += card
+                else:
+                    common += f" ({self.cards.index(common[-1])})\n{card}"
             elif card in self.rare:
-                if not had_rare:
-                    had_rare = True
-                    output += "\nrare:\n"
+                if rare[-1] == card or rare[-1] == "\n":
+                    rare += card
+                else:
+                    rare += f" ({self.cards.index(rare[-1])})\n{card}"
             elif card in self.epic:
-                if not had_epic:
-                    had_epic = True
-                    output += "\nepic:\n"
+                if epic[-1] == card or epic[-1] == "\n":
+                    epic += card
+                else:
+                    epic += f" ({self.cards.index(epic[-1])})\n{card}"
             else:
-                if not had_legendary:
-                    had_legendary = True
-                    output += "\nlegendary:\n"
-            output += card
-        await ctx.send(output)
+                if legendary[-1] == card or legendary[-1] == "\n":
+                    legendary += card
+                else:
+                    legendary += f" ({self.cards.index(legendary[-1])})\n{card}"
+        if len(common) != 1:
+            common += f" ({self.cards.index(common[-1])})"
+        if len(rare) != 1:
+            rare += f" ({self.cards.index(rare[-1])})"
+        if len(epic) != 1:
+            epic += f" ({self.cards.index(epic[-1])})"
+        if len(legendary) != 1:
+            legendary += f" ({self.cards.index(legendary[-1])})"
+        rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
+        for rarity in rarities:
+            if len(rarities[rarity]) != 1:
+                e.add_field(name=rarity, value=rarities[rarity])
 
 
-    @commands.command(description="Syntax - trade (things you're giving separated by spaces) for (things you're taking separated by spaces)\nFor lokkoin payments, type the number of lokkoins")
+        await ctx.send(embed=e)
+
+    @commands.command(description="Syntax - trade (things you're giving separated by spaces) for (things you're taking separated by spaces)\nTo trade an emoji use its id\nFor lokkoin payments, type the \"l\" followed number of lokkoins")
     async def trade(self, ctx, friend: commands.MemberConverter, *args):
         args = [arg.lower() for arg in args]
         if not "for" in args:
@@ -181,7 +199,11 @@ class Tcg(commands.Cog):
         lokkoin = self.bot.get_cog("lokkoin")
         inventory = self.get_inventory(str(ctx.author.id))[:]
         for card in giving:
-            if card.isdigit():
+            if not card.isdigit():
+                if not card[1:].isdigit():
+                    await ctx.send("Please use a number for this")
+                    return
+                card = card[1:]
                 if lokkoin_transaction:
                     await ctx.send("There is already lokkoin in this trade. Cancelling")
                     return
@@ -193,19 +215,23 @@ class Tcg(commands.Cog):
                 if balance < int(card):
                     await ctx.send("You don't have that much money... trade cancelled")
                     return
-                giving.remove(card)
+                giving.remove(f"l{card}")
                 break
-            if not card in self.cards:
+            card = int(card) 
+            if not card in [i for i in range(len(self.cards))]:
                 await ctx.send(f"{card} is not a card. Cancelling trade")
                 return
-            card_num = self.cards.index(card)
-            if not card_num in inventory:
-                await ctx.send(f"You do not have the card {card} in your inventory")
+            if not card in inventory:
+                await ctx.send(f"You do not have the card {self.cards[card]} in your inventory")
                 return
-            inventory.remove(card_num)
+            inventory.remove(card)
         inventory = self.get_inventory(str(friend.id))[:]
         for card in getting:
-            if card.isdigit():
+            if not card.isdigit():
+                if not card[1:].isdigit():
+                    await ctx.send("Please use a number for this")
+                    return
+                card = card[1:]
                 if lokkoin_transaction:
                     await ctx.send("There is already lokkoin in this trade")
                     return
@@ -217,20 +243,25 @@ class Tcg(commands.Cog):
                 if balance < int(card):
                     await ctx.send("Your friend doesn't have that much money... trade cancelled")
                     return
-                getting.remove(card)
+                getting.remove(f"l{card}")
                 break
-            if not card in self.cards:
+            card = int(card)
+            if not card in [i for i in range(len(self.cards))]:
                 await ctx.send(f"{card} is not a card. Cancelling trade")
                 return
-            card_num = self.cards.index(card)
-            if not card_num in inventory:
-                await ctx.send(f"Your does not have the card {card} in their inventory")
+            if not card in inventory:
+                await ctx.send(f"Your friend does not have the card {self.cards[card]} in their inventory")
                 return
-            inventory.remove(card_num)
+            inventory.remove(card)
 
         output = ""
         for arg in args:
-            output += f"{arg}, "
+            if arg.isdigit():
+                output += self.cards[int(arg)]
+            elif arg.startswith("l"):
+                output += f" {arg[1:]} lokkoins "
+            else:
+                output += arg
         confirmation = await friend.send(f"Player {ctx.author.name}#{ctx.author.discriminator} has requested a trade with you. They want to give you {output}\nTo confirm this trade, react with a \u2705")
         await confirmation.add_reaction("\u2705")
         confirmation = await friend.fetch_message(confirmation.id)
@@ -245,8 +276,8 @@ class Tcg(commands.Cog):
                 else:
                     await lokkoin.remove_coins(str(friend.id), lokkoin_transaction[0])
                     await lokkoin.add_coins(str(ctx.author.id), lokkoin_transaction[0])
-            giving = [self.cards.index(card) for card in giving]
-            getting = [self.cards.index(card) for card in getting]
+            giving = [int(card) for card in giving]
+            getting = [int(card) for card in getting]
             self.remove_cards(str(ctx.author.id), giving)
             self.add_cards(str(friend.id), giving)
             self.remove_cards(str(friend.id), getting)

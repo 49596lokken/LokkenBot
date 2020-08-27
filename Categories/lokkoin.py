@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import random
+from checks import *
 
 class lokkoin(commands.Cog):
     def __init__(self, bot):
@@ -37,7 +38,7 @@ class lokkoin(commands.Cog):
     @commands.command()
     async def balance(self,ctx):
         amount = await self.get_balance(str(ctx.author.id))
-        if not amount:
+        if amount == None:
             await ctx.send("You need to register with the \"register\" command")
             return
         await ctx.send(f"Your balance is: {amount}")
@@ -117,7 +118,19 @@ class lokkoin(commands.Cog):
             return
         await ctx.send("Sorry, you lost...")
 
-        
+
+    @commands.command()
+    @commands.check(is_creator())
+    async def set_coins(self, ctx,  player: commands.MemberConverter, coins: int):
+        balance = await self.get_balance(str(player.id))
+        if balance == None:
+            await ctx.send("This player hasn't registered")
+            return
+        if coins < balance:
+            await self.remove_coins(str(player.id), balance-coins)
+        elif coins > balance:
+            await self.add_coins(str(player.id), coins-balance)
+        await ctx.send("Balance updated")
 
     
 
