@@ -39,7 +39,7 @@ class maths(commands.Cog):
     
     @commands.command()
     async def pi(self, ctx, digits: int=50):
-        f = open("data/pi.txt", "r")
+        f = open("data/maths/pi.txt", "r")
         content = f.read()
         if digits > len(content):
             await ctx.send("Too many digits")
