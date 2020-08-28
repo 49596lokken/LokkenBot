@@ -36,6 +36,18 @@ class maths(commands.Cog):
                         f.write(await r.content.read())
                     await ctx.send(submission.title, file=discord.File(f"meme.{file_extension}"))
                     os.remove(f"meme.{file_extension}")
+    
+    @commands.command()
+    async def pi(self, ctx, digits: int=50):
+        f = open("data/pi.txt", "r")
+        content = f.read()
+        if digits > len(content):
+            await ctx.send("Too many digits")
+            return
+        await ctx.send(f"3.{content[:digits]}")
+    
+
+    
         
 
 

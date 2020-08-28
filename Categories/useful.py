@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import random
+import datetime
 
 class useful(commands.Cog):
     def __init__(self, bot):
@@ -52,7 +53,17 @@ class useful(commands.Cog):
             await ctx.send(f"{i} space(s) at the end")
 
         await ctx.send(output)
-        
+    
+    @commands.command(description="sends you an invite to the test server")
+    async def test(self, ctx):
+        main_channel = self.bot.get_channel(731187247449243658)
+        new_invite = await main_channel.create_invite(unique = False)
+        await ctx.author.send(f"Please join my test server at \n{new_invite}")
+    
+    @commands.command()
+    async def ping(self, ctx):
+        now = datetime.datetime.utcnow()
+        await ctx.send(f"{round((now-ctx.message.created_at).total_seconds()*1000)}")
 
 
 
