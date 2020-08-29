@@ -27,7 +27,7 @@ class Games(commands.Cog):
         if not opponent in ctx.guild.members:
             await ctx.send("Person is not in the server")
             return
-        if opponent = self.bot.user:
+        if opponent == self.bot.user:
             await ctx.send("My creator is lazy and didn't teach me how to play")
             return
         if wager != 0:
