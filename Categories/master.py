@@ -16,7 +16,7 @@ class Games(commands.Cog):
         for line in temp:
             self.valid_pieces += line
 
-    @commands.group(pass_context=True,invoke_without_command=True)
+    @commands.group(pass_context=True,invoke_without_command=True, description="Command group for mastermind games")
     async def master(self,ctx):
         ...
     
@@ -28,7 +28,7 @@ class Games(commands.Cog):
         else:
             raise(InvalidPiece)
 
-    @master.command()
+    @master.command(description="Starts a game of mastermind against the specified opponent (can play against the bot)")
     async def start(self, ctx, opponent: commands.MemberConverter):
         
         await ctx.send("Let's play!")
@@ -62,7 +62,7 @@ class Games(commands.Cog):
         self.games[opponent].code = [message.content[i] for i in range(4)]
         await ctx.send("Game started")
     
-    @master.command()
+    @master.command(description="Makes a guess in a game of mastermind. Can either use emojis or the first letter of their colours")
     async def guess(self, ctx, guess):
         if not ctx.author in self.games:
             await ctx.send("You are not currently guessing in a game")
@@ -114,10 +114,10 @@ class Games(commands.Cog):
             await ctx.send(game.board)
             del self.games[ctx.author]
     
-    @master.command()
+    @master.command(description="Shows you the board of the game you are guessing in")
     async def board(self, ctx):
         if not ctx.author in self.games:
-            await ctx.send("You are not in a game")
+            await ctx.send("You are not guessing in a game")
             return
         board = self.games[ctx.author].board
         await ctx.send(f"Mastermind game against {self.games[ctx.author].opponent}\n{board}")

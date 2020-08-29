@@ -14,29 +14,22 @@ class Games(commands.Cog):
             return(f"{ctx.guild.id} {ctx.channel.id}")
         return(None)
 
-    @commands.group(pass_context=True,invoke_without_command=True)
+    @commands.group(pass_context=True,invoke_without_command=True, description="Command group for having games of connect 4 in the channel")
     async def c4(self, ctx):
         ...
     
-    @c4.command(name="start")
-    async def c4_start(self, ctx, opponent: commands.MemberConverter, wager=0):
+    @c4.command(description="Starts a game of connect 4 in the channel against the opponent with an optional wager")
+    async def start(self, ctx, opponent: commands.MemberConverter, wager: int=0):
         wager = int(wager)
         if not ctx.guild:
             await ctx.send("This can only happen in a server")
             return
         if not opponent in ctx.guild.members:
             await ctx.send("Person is not in the server")
-        channel = self.get_channel(ctx)
-        new_game = C4Game([ctx.author, opponent], wager)
-        if channel in self.c4_channels:
-            xo_channel = self.c4_channels[channel]
-            for game in xo_channel:
-                if ctx.author.id in game.players or opponent.id in game.players:
-                    await ctx.send("One of you is already playing in this channel")
-                    return
-            xo_channel.append(new_game)
-        else:
-            self.c4_channels[channel] = [new_game]
+            return
+        if opponent = self.bot.user:
+            await ctx.send("My creator is lazy and didn't teach me how to play")
+            return
         if wager != 0:
             confirmation = await ctx.send(f"{opponent.mention}, react to this message with \u2705 within 10 seconds to confirm the wager of {wager} lokkoins")
             await confirmation.add_reaction("\u2705")
@@ -48,6 +41,17 @@ class Games(commands.Cog):
             except asyncio.TimeoutError:
                 await ctx.send("Wager cancelled.")
                 wager = 0
+        channel = self.get_channel(ctx)
+        new_game = C4Game([ctx.author, opponent], wager)
+        if channel in self.c4_channels:
+            xo_channel = self.c4_channels[channel]
+            for game in xo_channel:
+                if ctx.author.id in game.players or opponent.id in game.players:
+                    await ctx.send("One of you is already playing in this channel")
+                    return
+            xo_channel.append(new_game)
+        else:
+            self.c4_channels[channel] = [new_game]
         if wager != 0:
             lokkoin = self.bot.get_cog("lokkoin")
             if lokkoin:
@@ -66,8 +70,8 @@ class Games(commands.Cog):
         await ctx.send(f"{new_game.players[new_game.turn%2].mention} It's your turn")
         await ctx.send(new_game.get_board())
 
-    @c4.command(name="play")
-    async def c4_play(self, ctx, column: int):
+    @c4.command(description="Plays in a game of connect 4.")
+    async def play(self, ctx, column: int):
         if not ctx.guild:
             await ctx.send("Please use this command in a guild")
             return
@@ -94,13 +98,36 @@ class Games(commands.Cog):
             game.turn += 1
             if game.check_win():
                 await ctx.send(f"{ctx.author.mention} you win!")
+                if game.wager:
+                    lokkoin = self.bot.get_cog("lokkoin")
+                    await lokkoin.add_coins(str(ctx.author.id), game.wager)
+                    self.c4_channels[channel].remove(game)
                 return
             if game.turn == 42:
                 await ctx.send("Game was a draw")
             await ctx.send(f"{game.players[game.turn%2].mention} It's your turn")
             await ctx.send(game.get_board())
+            self.c4_channels[channel].remove(game)
         except C4Error:
             await ctx.send("Unable to play there")
+    @c4.command(description="Shows you the board of the connect 4 game you are playing in the channel")
+    async def board(self, ctx):
+        if not ctx.guild:
+            await ctx.send("Please use this command in a guild")
+            return
+        channel = self.get_channel(ctx)
+        if not channel in self.c4_channels:
+            await ctx.send("No games of connect 4 here")   
+            return
+        playing = False
+        for game in self.c4_channels[channel]:
+            if ctx.author in game.players:
+                playing = True
+                break
+        if not playing:
+            await ctx.send("Sorry, you are not in a game here")
+            return
+        await ctx.send(game.get_board())
 
 
 class C4Game():

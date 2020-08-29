@@ -20,7 +20,7 @@ def findprefix(bot, message):
     f.close()
     return(default_prefix)
 
-bot = commands.Bot(command_prefix=findprefix, case_insensitive=True)
+bot = commands.Bot(command_prefix=findprefix, case_insensitive=True, help_command=None)
 
 @bot.event
 async def on_message(message):
@@ -35,7 +35,7 @@ async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
-categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh", "lokken"]
+categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh", "lokken", "help"]
 for category in categories:
     try:
         bot.load_extension(f"Categories.{category}")
@@ -48,30 +48,23 @@ for category in categories:
 @bot.command()
 @bot.check(is_creator())
 async def reload(ctx, cog_name):
-    try:
-        bot.reload_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been reloaded")
-    except Exception as e:
-        await ctx.send(e)
+    bot.reload_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been reloaded")
+
 
 @bot.command()
 @bot.check(is_creator())
 async def unload(ctx, cog_name):
-    try:
-        bot.remove_cog(cog_name)
-        bot.unload_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been unloaded")
-    except Exception as e:
-        await ctx.send(e)
+    bot.remove_cog(cog_name)
+    bot.unload_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been unloaded")
+
 
 @bot.command()
 @bot.check(is_creator())
 async def load(ctx, cog_name):
-    try:
-        bot.load_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been loaded")
-    except Exception as e:
-        await ctx.send(e)
+    bot.load_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been loaded")
 
 
 

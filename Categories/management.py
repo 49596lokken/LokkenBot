@@ -9,8 +9,8 @@ class management(commands.Cog):
 
 
 
-    @commands.command(aliases=["set_prefix"])
-    @commands.has_permissions(manage_messages=True)
+    @commands.command(aliases=["set_prefix"],description="Changes the prefix for the bot in the server")
+    @commands.has_permissions(manage_guild=True)
     async def change_prefix(self, ctx, new_prefix):
         if not ctx.guild:
             await ctx.send("I have no prefix in DMs")
@@ -36,7 +36,7 @@ class management(commands.Cog):
             await ctx.send("Resetting username")
             await ctx.guild.me.edit(nick=self.bot.user.name)
         if not brackets in self.brackets:
-            await ctx.send("Unrecognised brackets\nSuitable brackets are {self.brackets}")
+            await ctx.send(f"Unrecognised brackets\nSuitable brackets are {self.brackets}")
             return
         place=place.lower()
         if not place in ["end", "start"]:

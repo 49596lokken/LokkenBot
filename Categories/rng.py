@@ -8,12 +8,12 @@ class Games(commands.Cog):
         self.games = {}
 
 
-    @commands.group(pass_context=True,invoke_without_command=True)
+    @commands.group(pass_context=True,invoke_without_command=True,description="Random number game - I think of a number and you have to guess it in a specified number of tries")
     async def rng(self,ctx):
         ...
     
 
-    @rng.command()
+    @rng.command(description="Starts a game - You can choose the limits")
     async def start(self, ctx, lowest: int=0, highest: int=100):
         if ctx.author in self.games:
             await ctx.send("You are already playing a game!")
@@ -23,7 +23,7 @@ class Games(commands.Cog):
         await ctx.send(f"I am thinking of a number. It is between {lowest} and {highest}. If you are able to guess my number in under {int((highest-lowest)**0.5)-1} tries, You will get 100 lokkoins")
         self.games[ctx.author] = RngGame(random.randint(lowest, highest), int((highest-lowest)**0.58)-1)
 
-    @rng.command()
+    @rng.command(description="Guesses in the game - I will tell you higher or lower")
     async def guess(self, ctx, guess: int):
         if not ctx.author in self.games:
             await ctx.send("You are not playing now")

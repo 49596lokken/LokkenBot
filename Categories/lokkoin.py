@@ -3,6 +3,7 @@ from discord.ext import commands
 import asyncio
 import random
 from checks import *
+import typing
 
 class lokkoin(commands.Cog):
     def __init__(self, bot):
@@ -35,15 +36,17 @@ class lokkoin(commands.Cog):
         f.write(output)
         f.close()
 
-    @commands.command()
-    async def balance(self,ctx):
-        amount = await self.get_balance(str(ctx.author.id))
+    @commands.command(description="Sends the balance of a player (default is the author)")
+    async def balance(self,ctx, player: typing.Optional[commands.MemberConverter] = None):
+        if not player:
+            player = ctx.author
+        amount = await self.get_balance(str(player.id))
         if amount == None:
             await ctx.send("You need to register with the \"register\" command")
             return
         await ctx.send(f"Your balance is: {amount}")
     
-    @commands.command()
+    @commands.command(description="Registers you to earn lokkoins")
     async def register(self,ctx):
         if str(ctx.author.id) in self.balances:
             await ctx.send("You are already registered")
@@ -53,7 +56,7 @@ class lokkoin(commands.Cog):
         self.balances[str(ctx.author.id)] = 200
         await ctx.send("Successfully registered. Your balance is 200 lokkoins!")
 
-    @commands.command()
+    @commands.command(description="Pays a person a set number of lokkoins")
     async def pay(self, ctx, payee: commands.MemberConverter, amount: int):
         if not str(ctx.author.id) in self.balances:
             await ctx.send("You need to register for lokkoins")
@@ -119,8 +122,8 @@ class lokkoin(commands.Cog):
         await ctx.send("Sorry, you lost...")
 
 
-    @commands.command()
-    @commands.check(is_creator())
+    @commands.command(description="Sets the balance of a person")
+    @is_creator()
     async def set_coins(self, ctx,  player: commands.MemberConverter, coins: int):
         balance = await self.get_balance(str(player.id))
         if balance == None:

@@ -99,24 +99,24 @@ class Tcg(commands.Cog):
         return([pack, rarities])
 
 
-    @commands.command()
+    @commands.command(description="Shows all of the cards in the game")
     async def allcards(self, ctx):
-        output = ""
-        output += "**__common__**\n"
+        e = discord.Embed(title=f"All of the cards in {self.bot.user.name} TCG")
+        common, rare, epic, legendary = "", "", "", ""
         for card in self.common:
-            output += f"{card} ({self.cards.index(card)})\n"
-        output += "\n**__rare__**\n"
+            common += f"{card} ({self.cards.index(card)})\n"
         for card in self.rare:
-            output += card
-        output += "\n**__epic__**\n"
+            rare += f"{card} ({self.cards.index(card)})\n"
         for card in self.epic:
-            output += card
-        output += "\n**__legendary__**\n"
+            epic += f"{card} ({self.cards.index(card)})\n"
         for card in self.legendary:
-            output += card
-        await ctx.send(output)
+            legendary += f"{card} ({self.cards.index(card)})\n"
+        rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
+        for rarity in rarities:
+            e.add_field(name=rarity, value=rarities[rarity])
+        await ctx.send(embed=e)
 
-    @commands.command(brief="costs 50 lokkoins for a pack of 5")
+    @commands.command(brief="costs 50 lokkoins for a pack of 5",description="Gives you a pack of cards")
     async def pack(self, ctx):
         lokkoin = self.bot.get_cog("lokkoin")
         if not lokkoin:
@@ -139,7 +139,7 @@ class Tcg(commands.Cog):
         self.add_cards(str(ctx.author.id), [self.cards.index(card) for card in pack[0]])
         await lokkoin.remove_coins(str(ctx.author.id), 50)
 
-    @commands.command()
+    @commands.command(description="Shows you the inventory of a player (defaults to the author)")
     async def inventory(self, ctx, player: typing.Optional[commands.MemberConverter] = None):
         if not player:
             player = ctx.author
@@ -182,12 +182,12 @@ class Tcg(commands.Cog):
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
         for rarity in rarities:
             if len(rarities[rarity]) != 1:
-                e.add_field(name=rarity, value=rarities[rarity])
+                e.add_field(name=rarity, value=rarities[rarity], inline=True)
 
 
         await ctx.send(embed=e)
 
-    @commands.command(description="Syntax - trade (things you're giving separated by spaces) for (things you're taking separated by spaces)\nTo trade an emoji use its id\nFor lokkoin payments, type the \"l\" followed number of lokkoins")
+    @commands.command(description="Syntax - trade (things you're giving separated by spaces) for (things you're taking separated by spaces)\nTo trade an emoji use its id\nFor lokkoin payments, type \"l\" followed by the number of lokkoins")
     async def trade(self, ctx, friend: commands.MemberConverter, *args):
         args = [arg.lower() for arg in args]
         if not "for" in args:

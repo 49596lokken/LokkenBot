@@ -13,11 +13,11 @@ class Games(commands.Cog):
             return(f"{ctx.guild.id} {ctx.channel.id}")
         return(None)
     
-    @commands.group(pass_context=True,invoke_without_command=True)
+    @commands.group(pass_context=True,invoke_without_command=True, description="A command group to handle games of noughts and crosses games")
     async def xo(self, ctx):
         ...
 
-    @xo.command(description="Starts a noughts and crosses with a specified person", brief="author of message starts", name="start")
+    @xo.command(description="Starts a noughts and crosses with a specified person", brief="author of message starts")
     async def start(self, ctx, opponent: commands.MemberConverter, wager=0):
         wager = int(wager)
         if not ctx.guild:
@@ -25,6 +25,10 @@ class Games(commands.Cog):
             return
         if not opponent in ctx.guild.members:
             await ctx.send("Person is not in the server")
+            return
+        if opponent == ctx.author:
+            await ctx.send("My creator is lazy. Did you really think you would be able to play against an AI?")
+            return
         channel = self.get_channel(ctx)
         new_game = XoGame([ctx.author.id, opponent.id], wager)
         if channel in self.xo_channels:
@@ -64,8 +68,8 @@ class Games(commands.Cog):
         await ctx.send(f"Game between {ctx.author.mention} and {opponent.mention} started!")
         await ctx.send(new_game.get_board())
 
-    @xo.command(description="Plays in a game of noughts and crosses", name="play")
-    async def xo_play(self, ctx, place):
+    @xo.command(description="Plays in a game of noughts and crosses")
+    async def play(self, ctx, place):
         if not ctx.guild:
             await ctx.send("This can only happen in a server")
             return
@@ -119,6 +123,25 @@ class Games(commands.Cog):
                 self.xo_channels[channel].remove(game)
                 return
 
+    @xo.command(description="Shows you the board in your game")
+    async def board(self, ctx):
+        if not ctx.guild:
+            await ctx.send("This can only happen in a server")
+            return
+        channel = self.get_channel(ctx)
+        if not channel in self.xo_channels:
+            await ctx.send("No games of noughts and crosses here")   
+            return
+        playing = False
+        for game in self.xo_channels[channel]:
+            if ctx.author.id in game.players:
+                playing = True
+                break
+        if not playing:
+            await ctx.send("Sorry, you are not in a game here")
+            return
+        await ctx.send(game.get_board)
+    
 class XoGame:
     def __init__(self, players, wager):
         self.players=players

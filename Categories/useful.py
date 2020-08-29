@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import datetime
+from checks import *
 
 class useful(commands.Cog):
     def __init__(self, bot):
@@ -10,18 +11,19 @@ class useful(commands.Cog):
         self.alphabet.append(" ")
         self.all_characters = [chr(i) for i in range(32, 127)]
     
-    @commands.command()
+    @commands.command(description="prints a line to the console - for debug")
+    @is_creator()
     async def print(self, ctx):
         print(ctx.message.content)
     
-    @commands.command()
+    @commands.command(description="Generates a random password for you. I do not store them")
     async def password(self, ctx, length: int):
         pwd = ""
         for i in range(length):
             pwd += random.choice(self.all_characters[1:])
         await ctx.author.send(f"```{pwd}```")
     
-    @commands.command()
+    @commands.command(description="encodes a piece of text according to an algorithm. Encoding is the same as decoding")
     async def encode(self, ctx, password, number: int, *message):
         to_encode =""
         for word in message:
@@ -60,10 +62,10 @@ class useful(commands.Cog):
         new_invite = await main_channel.create_invite(unique = False)
         await ctx.author.send(f"Please join my test server at \n{new_invite}")
     
-    @commands.command()
+    @commands.command(description="Finds the ping in ms")
     async def ping(self, ctx):
         now = datetime.datetime.utcnow()
-        await ctx.send(f"{round((now-ctx.message.created_at).total_seconds()*1000)}")
+        await ctx.send(f"The ping is: ```{round((now-ctx.message.created_at).total_seconds()*1000)}ms```")
 
 
 

@@ -19,30 +19,33 @@ class Games(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.dos_class.cards = {}
+        if self.dos_class.cards:
+            return
         for emoji in self.bot.get_guild(721340744207695903).emojis:
             if emoji.name.lower() == "cardback":
                 self.dos_class.cardback = str(emoji)
             else:
                 self.dos_class.cards[emoji.name.lower().replace("_", "#")] = str(emoji)
 
-    @commands.group(pass_context=True,invoke_without_command=True)
+    @commands.group(pass_context=True,invoke_without_command=True,description="A command group for games of Dos - Not in any way associated with matel (Please don't sue me)")
     async def dos(self, ctx):
         ...
-    @dos.command(name="enable")
-    async def dos_enable(self, ctx):
+    @dos.command(brief="requires manage channels permission", description="Enables dos in a channel")
+    @commands.has_permissions(manage_channels=True)
+    async def enable(self, ctx):
         await ctx.send(self.dos_class.enable(self.get_channel(ctx)))
 
-    @dos.command(name="disable")
-    async def dos_disable(self,ctx):
+    @dos.command(brief="requires manage channels permission", description="Disables dos in a channel")
+    @commands.has_permissions(manage_channels=True)
+    async def disable(self,ctx):
         await ctx.send(self.dos_class.disable(self.get_channel(ctx)))
 
 
-    @dos.command(description="Prepares a channel for a game of dos",name="ready")
-    async def dos_ready(self, ctx):
+    @dos.command(description="Prepares a channel for a game of dos")
+    async def ready(self, ctx):
         ready = self.dos_class.ready(self.get_channel(ctx))
         if ready == "Game ready":
-            startmsg = await ctx.send(f"Please react to this message to be added to the dos game. One everyone has reacted, {ctx.author.mention} should execute the \"dos start\" command to start the game")
+            startmsg = await ctx.send(f"Please react to this message to be added to the dos game. One everyone has reacted, {ctx.author.mention} should type \"{ctx.prefix}dos start\" to start the game")
             await startmsg.add_reaction("\U0000270B")
             game = self.dos_class.games[self.get_channel(ctx)]
             game.start_id = startmsg.id
@@ -50,8 +53,8 @@ class Games(commands.Cog):
             return
         await ctx.send(ready)
 
-    @dos.command(description="Starts a game of dos in the channel",name="start")
-    async def dos_start(self, ctx):
+    @dos.command(description="Starts a game of dos in the channel")
+    async def start(self, ctx):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if game:
             if game.started:
@@ -89,7 +92,7 @@ class Games(commands.Cog):
             rules = open(f"assets/games/dos/howto-{game.rules}.txt")
             await ctx.send(rules.read())
             rules.close()
-            await ctx.send("Try the \"help dos\" for help")
+            await ctx.send(f"Try \"{ctx.prefix}help dos\" for help")
             random.shuffle(players)
             for i in range(7):
                 for player in players:
@@ -105,23 +108,23 @@ class Games(commands.Cog):
             await ctx.send(game.get_centre_row())
             
         else:
-            await ctx.send("Try \"dos ready\"")
+            await ctx.send(f"Try \"{ctx.prefix}dos ready\"")
 
 
-    @dos.command(description="plays cards onto pile. Last card specified is the pile to be played onto\ncards are formatted as (first letter of colour)(number) or just dos if it is a 2",name="play")
-    async def dos_play(self, ctx, *cards):
+    @dos.command(description="plays cards onto pile. Last card specified is the pile to be played onto\ncards are formatted as (first letter of colour)(number) or just dos if it is a 2")
+    async def play(self, ctx, *cards):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if not game:
-            await ctx.send("please use \"dos ready\"")
+            await ctx.send(f"please try \"{ctx.prefix}dos ready\"")
             return
         if not game.started:
-            await ctx.send("please use \"dos start\"")
+            await ctx.send(f"please try \"{ctx.prefix}dos start\"")
             return
         if ctx.author != game.current_player():
             await ctx.send("It isn't your turn")
             return
         if game.played and game.rules=="spain":
-            await ctx.send("You have aready played. To add a newpile use the \"dos newpile \" command")
+            await ctx.send(f"You have aready played. To add a newpile type \"{ctx.prefix}dos newpile \"")
             return
         if len(game.centre_row) == 0:
             await ctx.send("No cards to play on")
@@ -153,8 +156,8 @@ class Games(commands.Cog):
                         game.players[player].draw_card()
                     await player.send(game.get_player(player).get_hand())
     
-    @dos.command(description="Adds a new pile",name="newpile")
-    async def dos_newpile(self, ctx, newpile):
+    @dos.command(description="Adds a new pile")
+    async def newpile(self, ctx, newpile):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if not game:
             await ctx.send("There is no game here")
@@ -172,7 +175,7 @@ class Games(commands.Cog):
                 game.centre_row.append(card)
                 game.deck.remove(card)
         if game.colour_matches == 0:
-            await ctx.send("You have no piles to add. type \"dos next\" to go onto the next turn")
+            await ctx.send(f"You have no piles to add. type \"{ctx.prefix}dos next\" to go onto the next turn")
             return
         dos_player = game.get_player(ctx.author)
         if not newpile in dos_player.hand:
@@ -187,8 +190,8 @@ class Games(commands.Cog):
         await ctx.send(game.get_centre_row())
 
 
-    @dos.command(description="Ends your turn", name="next")
-    async def dos_next(self,ctx):
+    @dos.command(description="Ends your turn")
+    async def next(self,ctx):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if not game:
             await ctx.send("There is no game here")
@@ -227,8 +230,8 @@ class Games(commands.Cog):
         await ctx.send(game.get_centre_row())
         await game.current_player().send(game.get_player(game.current_player()).get_hand())
 
-    @dos.command(description="Shows the centre row",aliases=["piles"],name="centre")
-    async def dos_centre(self,ctx):
+    @dos.command(description="Shows the centre row",aliases=["piles"])
+    async def centre(self,ctx):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if not game:
             await ctx.send("There is no game here")
@@ -238,8 +241,8 @@ class Games(commands.Cog):
             return
         await ctx.send(game.get_centre_row())
     
-    @dos.command(description="shows you your hand",name="hand")
-    async def dos_hand(self,ctx):
+    @dos.command(description="shows you your hand")
+    async def hand(self,ctx):
         game = self.dos_class.get_game(self.get_channel(ctx))
         if not game:
             await ctx.send("There is no game here")

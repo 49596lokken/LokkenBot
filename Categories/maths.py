@@ -15,7 +15,7 @@ class maths(commands.Cog):
 
 
 
-    @commands.command()
+    @commands.command(description="Sends a mathematical meme to the channel")
     async def mathsmeme(self, ctx):
         subreddit = self.reddit.subreddit("mathmemes")
         memes = list(subreddit.new(limit=15))
@@ -37,7 +37,7 @@ class maths(commands.Cog):
                     await ctx.send(submission.title, file=discord.File(f"meme.{file_extension}"))
                     os.remove(f"meme.{file_extension}")
     
-    @commands.command()
+    @commands.command(description="Sends a specified number of digits to the channel")
     async def pi(self, ctx, digits: int=50):
         f = open("data/maths/pi.txt", "r")
         content = f.read()
