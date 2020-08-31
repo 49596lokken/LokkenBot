@@ -27,6 +27,9 @@ class Lokken(commands.Cog):
             subprocess.run(["git", "commit", "-m", f"{output}"])
             subprocess.run(["git", "push", "-u", "origin", "master"])
             await ctx.send("Done!")
+        else:
+            subprocess.run(["git", "pull", "-f", "origin", "master"])
+            await ctx.send("Done!")
 
             
 
