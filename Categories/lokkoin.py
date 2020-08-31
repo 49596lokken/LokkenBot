@@ -5,6 +5,7 @@ import random
 from checks import *
 import typing
 
+
 class lokkoin(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
@@ -134,6 +135,7 @@ class lokkoin(commands.Cog):
         elif coins > balance:
             await self.add_coins(str(player.id), coins-balance)
         await ctx.send("Balance updated")
+
 
     
 
