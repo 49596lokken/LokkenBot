@@ -112,8 +112,9 @@ class Tcg(commands.Cog):
         for card in self.legendary:
             legendary += f"{card} ({self.cards.index(card)})\n"
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
+        print(len(common))
         for rarity in rarities:
-            e.add_field(name=rarity, value=rarities[rarity])
+            e.add_field(name=rarity, value=rarities[rarity], inline=True)
         await ctx.send(embed=e)
 
     @commands.command(brief="costs 50 lokkoins for a pack of 5",description="Gives you a pack of cards")
@@ -149,47 +150,58 @@ class Tcg(commands.Cog):
             return
         inventory = [self.cards[i] for i in inventory]
         e = discord.Embed(title=f"Inventory of {player.name}",description=f"{len(inventory)} cards")
-        common, rare, epic, legendary = "\n", "\n", "\n", "\n"
+        common, rare, epic, legendary = "", "", "", ""
+        occurences = 0
+        last_card = inventory[0]
         for card in inventory:
             if card in self.common:
-                if common[-1] == card or common[-1] == "\n":
-                    common += card
+                if card == last_card:
+                    occurences += 1
                 else:
-                    common += f" ({self.cards.index(common[-1])})\n{card}"
+                    common += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+                    occurences = 1
+                    last_card = card
             elif card in self.rare:
-                if rare[-1] == card or rare[-1] == "\n":
-                    rare += card
+                if card == last_card:
+                    occurences += 1
                 else:
-                    rare += f" ({self.cards.index(rare[-1])})\n{card}"
+                    rare += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+                    occurences = 1
+                    last_card = card
             elif card in self.epic:
-                if epic[-1] == card or epic[-1] == "\n":
-                    epic += card
+                if card == last_card:
+                    occurences += 1
                 else:
-                    epic += f" ({self.cards.index(epic[-1])})\n{card}"
+                    epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+                    occurences = 1
+                    last_card = card
             else:
-                if legendary[-1] == card or legendary[-1] == "\n":
-                    legendary += card
+                if card == last_card:
+                    occurences += 1
                 else:
-                    legendary += f" ({self.cards.index(legendary[-1])})\n{card}"
-        if len(common) != 1:
-            common += f" ({self.cards.index(common[-1])})"
-        if len(rare) != 1:
-            rare += f" ({self.cards.index(rare[-1])})"
-        if len(epic) != 1:
-            epic += f" ({self.cards.index(epic[-1])})"
-        if len(legendary) != 1:
-            legendary += f" ({self.cards.index(legendary[-1])})"
+                    legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+                    occurences = 1
+                    last_card = card
+        
+        common += rare[:rare.index("\n")]
+        rare = rare[rare.index("\n")+1:]
+        rare += epic[:epic.index("\n")]
+        epic = epic[epic.index("\n")+1:]
+        epic += legendary[:legendary.index("\n")]
+        legendary = legendary[legendary.index("\n")+1:]
+        legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
         for rarity in rarities:
 
             if len(rarities[rarity]) != 1:
+                to_add = 1
                 while len(rarities[rarity]) > 1024:
-                    for i in range(1024, 0, -1):
-                        if rarities[rarity][i] == "\n":
-                            break
-                    e.add_field(name=rarity, value=rarities[rarity][:i])
-                    rarities[rarity][i:]
-                e.add_field(name=rarity, value=rarities[rarity], inline=True)
+                    print(len(rarities[rarity]))
+                    index_of_newline = 1024-rarities[rarity][:1024][::-1].index("\n")
+                    e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity][:index_of_newline], inline=False)
+                    rarities[rarity] = rarities[rarity][index_of_newline:]
+                    to_add += 1
+                e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity], inline=False)
 
 
         await ctx.send(embed=e)

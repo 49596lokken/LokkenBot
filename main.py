@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from checks import *
+import sys
 
 def findprefix(bot, message):
     if not message.guild:
@@ -34,6 +35,7 @@ async def on_message(message):
 async def on_ready():
     print(f'Logged in as: {bot.user.name}')
     print(f'With ID: {bot.user.id}')
+    print(f"On discord.py version {discord.__version__} in python {sys.version}")
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
 categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh", "lokken", "help"]
 for category in categories:
