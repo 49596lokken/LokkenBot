@@ -187,9 +187,12 @@ class Tcg(commands.Cog):
         rare = rare[rare.index("\n")+1:]
         rare += epic[:epic.index("\n")]
         epic = epic[epic.index("\n")+1:]
-        epic += legendary[:legendary.index("\n")]
-        legendary = legendary[legendary.index("\n")+1:]
-        legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+        if len(legendary) != 0:
+            epic += legendary[:legendary.index("\n")]
+            legendary = legendary[legendary.index("\n")+1:]
+            legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+        else:
+            epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
         for rarity in rarities:
 
