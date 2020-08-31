@@ -185,7 +185,7 @@ class Tcg(commands.Cog):
             if len(rarities[rarity]) != 1:
                 while len(rarities[rarity]) > 1024:
                     for i in range(1024, 0, -1):
-                        if rarities[rarity] == "\n":
+                        if rarities[rarity][i] == "\n":
                             break
                     e.add_field(name=rarity, value=rarities[rarity][:i])
                     rarities[rarity][i:]
