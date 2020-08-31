@@ -181,7 +181,14 @@ class Tcg(commands.Cog):
             legendary += f" ({self.cards.index(legendary[-1])})"
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
         for rarity in rarities:
+
             if len(rarities[rarity]) != 1:
+                while len(rarities[rarity]) > 1024:
+                    for i in range(1024, 0, stpe=-1):
+                        if rarities[rarity] == "\n":
+                            break
+                    e.add_field(name=rarity, value=rarities[rarity][:i])
+                    rarities[rarity][:i]
                 e.add_field(name=rarity, value=rarities[rarity], inline=True)
 
 
