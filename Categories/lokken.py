@@ -18,11 +18,13 @@ class Lokken(commands.Cog):
     
     @commands.command()
     @is_creator()
-    async def update(self, ctx, commit_name):
-        commit_name = commit_name[0]
+    async def update(self, ctx, *commit_name):
+        output = ""
+        for word in commit_name:
+            output += f"{word} "
         if self.bot.user.name == "LokkenTestBot":
             subprocess.run(["git", "add", "./"])
-            subprocess.run(["git", "commit", "-m", f"\"{commit_name}\""])
+            subprocess.run(["git", "commit", "-m", f"{commit_name}"])
             subprocess.run(["git", "push", "-u", "origin", "master"])
 
             
