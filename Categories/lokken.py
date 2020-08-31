@@ -24,8 +24,9 @@ class Lokken(commands.Cog):
             output += f"{word} "
         if self.bot.user.name == "LokkenTestBot":
             subprocess.run(["git", "add", "./"])
-            subprocess.run(["git", "commit", "-m", f"{commit_name}"])
+            subprocess.run(["git", "commit", "-m", f"{output}"])
             subprocess.run(["git", "push", "-u", "origin", "master"])
+            await ctx.send("Done!")
 
             
 
