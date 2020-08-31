@@ -198,10 +198,10 @@ class Tcg(commands.Cog):
                 while len(rarities[rarity]) > 1024:
                     print(len(rarities[rarity]))
                     index_of_newline = 1024-rarities[rarity][:1024][::-1].index("\n")
-                    e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity][:index_of_newline], inline=False)
+                    e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity][:index_of_newline], inline=True)
                     rarities[rarity] = rarities[rarity][index_of_newline:]
                     to_add += 1
-                e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity], inline=False)
+                e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity], inline=True)
 
 
         await ctx.send(embed=e)
