@@ -38,7 +38,7 @@ class Games(commands.Cog):
             await ctx.send("You win!")
             lokkoin = self.bot.get_cog("lokkoin")
             if lokkoin:
-                if lokkoin.balance(str(ctx.author.id)) != None:
+                if await lokkoin.balance(str(ctx.author.id)) != None:
                     await lokkoin.add_coins(str(ctx.author.id), 100)
                     await ctx.send("You are now 100 lokkoins richer. Spend them wisely")
                     del self.games[ctx.author]
