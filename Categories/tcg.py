@@ -188,7 +188,7 @@ class Tcg(commands.Cog):
                         if rarities[rarity] == "\n":
                             break
                     e.add_field(name=rarity, value=rarities[rarity][:i])
-                    rarities[rarity][:i]
+                    rarities[rarity][i:]
                 e.add_field(name=rarity, value=rarities[rarity], inline=True)
 
 
