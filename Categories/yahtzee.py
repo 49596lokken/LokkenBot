@@ -66,6 +66,7 @@ class Games(commands.Cog):
             return
         if game.rolls == 3:
             await ctx.send("You have already rolled too many times")
+            return
         if game.diceroll:
             game.diceroll = [game.diceroll[i] for i in game.keeping]
             game.keeping = [i for i in range(len(game.diceroll))]
@@ -151,6 +152,8 @@ class Games(commands.Cog):
                     winner = [player, total]
             await ctx.send(f"Congratulations to {winner[0].mention} who won the game!\nThe scores were\n{scorecard}\n")
             del self.games[channel]
+            return
+        await ctx.send(f"{game.players[game.turns_taken].mention} its your turn")
         
 
 
@@ -199,7 +202,7 @@ class YahtzeeGame:
             for die in diceroll:
                 if die == number:
                     occurences += 1
-            if occurences > 2:
+            if occurences >= 2:
                 pairs.append(number)
         if len(pairs) >= 2:
             return(2*pairs[0] + 2*pairs[1])
@@ -212,8 +215,8 @@ class YahtzeeGame:
                 if die == number:
                     occurences += 1
             if occurences >= 3:
-                return(2*number)
-            return(0)
+                return(3*number)
+        return(0)
     
     def four_alike(self, diceroll):
         for number in range(6, 0, -1):
@@ -222,14 +225,18 @@ class YahtzeeGame:
                 if die == number:
                     occurences += 1
             if occurences >= 4:
-                return(2*number)
-            return(0)
+                return(4*number)
+        return(0)
     
     def small_straight(self, diceroll):
-        return(diceroll.sort() == [1,2,3,4,5])
+        if diceroll.sort() == [1,2,3,4,5]:
+            return(15)
+        return(0)
     
     def big_straight(self, diceroll):
-        return(diceroll.sort()) == [2,3,4,5,6]
+        if diceroll.sort() == [2,3,4,5,6]:
+            return(20)
+        return(0)
 
     def house(self, diceroll):
         house_parts = [None, None]
