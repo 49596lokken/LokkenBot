@@ -153,7 +153,7 @@ class Games(commands.Cog):
             await ctx.send(f"Congratulations to {winner[0].mention} who won the game!\nThe scores were\n{scorecard}\n")
             del self.games[channel]
             return
-        await ctx.send(f"{game.players[game.turns_taken].mention} its your turn")
+        await ctx.send(f"{game.players[game.turns_taken%len(game.players)].mention} its your turn")
         
 
 
@@ -229,12 +229,14 @@ class YahtzeeGame:
         return(0)
     
     def small_straight(self, diceroll):
-        if diceroll.sort() == [1,2,3,4,5]:
+        diceroll.sort()
+        if diceroll == [1,2,3,4,5]:
             return(15)
         return(0)
     
     def big_straight(self, diceroll):
-        if diceroll.sort() == [2,3,4,5,6]:
+        diceroll.sort()
+        if diceroll == [2,3,4,5,6]:
             return(20)
         return(0)
 
