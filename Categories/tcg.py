@@ -183,20 +183,31 @@ class Tcg(commands.Cog):
                     occurences = 1
                     last_card = card
         
-        common += rare[:rare.index("\n")]
-        rare = rare[rare.index("\n")+1:]
-        rare += epic[:epic.index("\n")]
-        epic = epic[epic.index("\n")+1:]
-        if len(legendary) != 0:
+        if last_card in self.common:
+            common += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+        elif last_card in self.rare:
+            rare += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+            common += rare[:rare.index("\n")]
+            rare = rare[rare.index("\n")+1:]
+        elif last_card in self.epic:
+            epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+            common += rare[:rare.index("\n")]
+            rare = rare[rare.index("\n")+1:]
+            rare += epic[:epic.index("\n")]
+            epic = epic[epic.index("\n")+1:]
+        else:
+            legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+            common += rare[:rare.index("\n")]
+            rare = rare[rare.index("\n")+1:]
+            rare += epic[:epic.index("\n")]
+            epic = epic[epic.index("\n")+1:]
             epic += legendary[:legendary.index("\n")]
             legendary = legendary[legendary.index("\n")+1:]
-            legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-        else:
-            epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
+
         rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
         for rarity in rarities:
 
-            if len(rarities[rarity]) != 1:
+            if len(rarities[rarity]):
                 to_add = 1
                 while len(rarities[rarity]) > 1024:
                     print(len(rarities[rarity]))
