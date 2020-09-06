@@ -152,6 +152,11 @@ class Games(commands.Cog):
                     winner = [player, total]
             await ctx.send(f"Congratulations to {winner[0].mention} who won the game!\nThe scores were\n{scorecard}\n")
             del self.games[channel]
+            lokkoin = self.bot.get_cog("lokkoin")
+            if lokkoin:
+                if await lokkoin.get_balance(str(winner[0].id)) != None:
+                    await lokkoin.add_coins(str(winner[0].id), 100)
+                    await ctx.send(f"{winner.display_name} gets 100 lokkoins for winning!")
             return
         await ctx.send(f"{game.players[game.turns_taken%len(game.players)].mention} its your turn")
         

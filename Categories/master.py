@@ -104,7 +104,7 @@ class Games(commands.Cog):
                 lokkoin = self.bot.get_cog("lokkoin")
                 if lokkoin:
                     if await lokkoin.get_balance(str(ctx.author.id)) != None:
-                        await lokkoin.add_coins(str(ctx.author.id), 50)
+                        await lokkoin.add_coins(str(ctx.author.id), 100)
                         await ctx.send("You get 50 lokkoins for beating me!")
             else:
                 await ctx.send(f"You beat {game.opponent.display_name} in {game.turns_taken} tries!")

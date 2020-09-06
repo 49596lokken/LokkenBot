@@ -210,7 +210,7 @@ class Games(commands.Cog):
             if lokkoins:
                 balance = await lokkoins.get_balance(str(ctx.author.id))
                 if balance:
-                    await lokkoins.add_coins(str(ctx.author.id), 100)
+                    await lokkoins.add_coins(str(ctx.author.id), 200)
                     await ctx.send(f"{ctx.author.display_name} got 100 lokkoins for winning!")
             return
         if game.colour_matches != 0:
