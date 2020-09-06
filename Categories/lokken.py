@@ -30,6 +30,8 @@ class Lokken(commands.Cog):
         else:
             subprocess.run(["sudo", "git", "pull", "-f", "origin", "master"])
             await ctx.send("Done!")
+            for extension in self.bot.extensions:
+                self.bot.reload_extension(extension)
 
             
 
