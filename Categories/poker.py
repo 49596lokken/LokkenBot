@@ -18,7 +18,7 @@ class Games(commands.Cog):
     def get_card(self, card):
         return(f"{self.numbers[card[0]]}{self.suits[card[1]]}")
 
-    @commands.group(description="Simple poker games in discord channels. Bets are made with Lokkoins. No maximum bet or bot playing", invoke_without_context=True, pass_context=True)
+    @commands.group(description="Simple poker games in discord channels. Bets are made with Lokkoins. No maximum bet or bot playing\nAlso aces high because I'm lazy", invoke_without_context=True, pass_context=True)
     async def poker(self, ctx):
         ...
 
