@@ -71,13 +71,16 @@ class Games(commands.Cog):
         if not game.code:
             await ctx.send("Your opponent hasn't set the code yet")
             return
+        if len(guess) != 4:
+            await ctx.send(f"You need to use exactly 4 of the following characters:\n{self.valid_pieces}")
+            return
         guess = [char for char in guess]
-
         try:
             for i in range(len(guess)):
                 guess[i] = self.validate_piece(guess[i])
         except InvalidPiece:
             await ctx.send(f"Invalid piece. You are only allowed to use:\n{self.valid_pieces}")
+            return
         output = []
         temp_code = game.code[:]
         blacks = 0
