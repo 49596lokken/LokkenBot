@@ -16,7 +16,7 @@ class Lokken(commands.Cog):
         await ctx.message.add_reaction("\U0001f44b")
         sys.exit()
     
-    @commands.command()
+    @commands.command(description="updates the bot")
     @is_creator()
     async def update(self, ctx, *commit_name):
         output = ""
