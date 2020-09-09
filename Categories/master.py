@@ -99,7 +99,10 @@ class Games(commands.Cog):
             await ctx.send("Nothing was correct")
         else:
             await ctx.send(to_send)
-        game.board = f"{guess} {to_send}\n" + game.board
+        formatted_guess = ""
+        for piece in guess:
+            formatted_guess += piece
+        game.board = f"{formatted_guess} {to_send}\n" + game.board
         game.turns_taken += 1
         if to_send == self.indicators[0]*4:
             if game.opponent == self.bot.user:
