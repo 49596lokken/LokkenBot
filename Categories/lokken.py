@@ -23,6 +23,9 @@ class Lokken(commands.Cog):
         for word in commit_name:
             output += f"{word} "
         if self.bot.user.name == "LokkenTestBot":
+            if not output:
+                await ctx.send("You need to specify a commit name!")
+                return
             subprocess.run(["git", "add", "./"])
             subprocess.run(["git", "commit", "-m", f"{output}"])
             subprocess.run(["git", "push", "-u", "origin", "master"])
