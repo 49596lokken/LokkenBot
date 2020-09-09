@@ -38,7 +38,7 @@ async def on_ready():
     print(f'With ID: {bot.user.id}')
     print(f"On discord.py version {discord.__version__} in python {sys.version}")
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
-categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh", "lokken", "help", "yahtzee"]
+categories = ["dos", "c4", "xo", "useful", "lokkoin", "tcg", "management", "maths", "master", "rng", "eh", "lokken", "help", "yahtzee", "poker"]
 for category in categories:
     try:
         bot.load_extension(f"Categories.{category}")
