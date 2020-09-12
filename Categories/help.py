@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
+import inspect
 
 
 class none(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
-
 
     @commands.command(name="help", brief="shows this message")
     async def help_command(self, ctx, *request):
@@ -85,9 +85,16 @@ class none(commands.Cog):
                             pass
                     e.add_field(name="commands", value=value)
                 else:
-                    params, output = [param for param in last_command.clean_params], ""
+                    params, output, parameter_types = last_command.clean_params, "", ""
                     for param in params:
                         output += f"[{param}] "
+                        if params[param].annotation != inspect.Parameter.empty:
+                            param_type = params[param].annotation.__name__
+                            param_type=param_type.replace("Converter","")
+                            parameter_types += f"{param}: {param_type}\n"
+
+                    if parameter_types:
+                        e.add_field(name="Parameters",value=parameter_types)
                     e.set_footer(text=f"{ctx.prefix}{full_command} {output}")
                 await ctx.send(embed=e)
                     

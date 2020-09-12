@@ -16,12 +16,6 @@ class useful(commands.Cog):
     async def print(self, ctx):
         print(ctx.message.content)
     
-    @commands.command(description="Generates a random password for you. I do not store them")
-    async def password(self, ctx, length: int):
-        pwd = ""
-        for i in range(length):
-            pwd += random.choice(self.all_characters[1:])
-        await ctx.author.send(f"```{pwd}```")
     
     @commands.command(description="encodes a piece of text according to an algorithm. Encoding is the same as decoding")
     async def encode(self, ctx, password, number: int, *message):
