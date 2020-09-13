@@ -89,9 +89,10 @@ class none(commands.Cog):
                     for param in params:
                         output += f"[{param}] "
                         if params[param].annotation != inspect.Parameter.empty:
-                            param_type = params[param].annotation.__name__
-                            param_type=param_type.replace("Converter","")
-                            parameter_types += f"{param}: {param_type}\n"
+                            param_type = str(params[param]).lower()
+                            for i in ["union", ".", "discord", "ext", "commands", "converter", ", nonetype", "[", "]"]:
+                                param_type = param_type.replace(i,"")
+                            parameter_types += f"{param_type}\n"
 
                     if parameter_types:
                         e.add_field(name="Parameters",value=parameter_types)

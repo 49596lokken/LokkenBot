@@ -38,14 +38,14 @@ class lokkoin(commands.Cog):
         f.close()
 
     @commands.command(description="Sends the balance of a player (default is the author)")
-    async def balance(self,ctx, player: typing.Optional[commands.MemberConverter] = None):
+    async def balance(self,ctx, player: typing.Optional[commands.MemberConverter]):
         if not player:
             player = ctx.author
         amount = await self.get_balance(str(player.id))
         if amount == None:
             await ctx.send("You need to register with the \"register\" command")
             return
-        await ctx.send(f"Your balance is: {amount}")
+        await ctx.send(f"The balance of {player.name} is: {amount}")
     
     @commands.command(description="Registers you to earn lokkoins")
     async def register(self,ctx):
@@ -74,7 +74,7 @@ class lokkoin(commands.Cog):
         await payee.send(f"{ctx.author.name}#{ctx.author.discriminator} has sent you {amount} lokkoins!")
     
     @commands.command(description="spins a slot machine\nIf you get a double match (any 2 the same) your bet is trippled, unless the mathcing emojis are \U0001F34B in which case your bet is multiplied by 5.\nIf you get all 3 the same, your bet is multiplied by 30 unless all 3 are \U0001F34B in which case the bet is multiplied by 100")
-    async def slots(self, ctx, gamble=50):
+    async def slots(self, ctx, gamble:int=50):
         if not str(ctx.author.id) in self.balances:
             await ctx.send("In order to gamble, you need to be registered for lokkoins")
             return
