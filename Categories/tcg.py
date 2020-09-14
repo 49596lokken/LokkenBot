@@ -153,11 +153,13 @@ class Tcg(commands.Cog):
         common, rare, epic, legendary = "", "", "", ""
         occurences = 0
         last_card = inventory[0]
+        num_of_each = [int(i==0) for i in range(4)]
         for card in inventory:
             if card in self.common:
                 if card == last_card:
                     occurences += 1
                 else:
+                    num_of_each[0] += 1
                     common += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
                     occurences = 1
                     last_card = card
@@ -165,6 +167,7 @@ class Tcg(commands.Cog):
                 if card == last_card:
                     occurences += 1
                 else:
+                    num_of_each[1] += 1
                     rare += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
                     occurences = 1
                     last_card = card
@@ -172,6 +175,7 @@ class Tcg(commands.Cog):
                 if card == last_card:
                     occurences += 1
                 else:
+                    num_of_each[2] += 1
                     epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
                     occurences = 1
                     last_card = card
@@ -179,6 +183,7 @@ class Tcg(commands.Cog):
                 if card == last_card:
                     occurences += 1
                 else:
+                    num_of_each[3] += 1
                     legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
                     occurences = 1
                     last_card = card
@@ -204,18 +209,12 @@ class Tcg(commands.Cog):
             epic += legendary[:legendary.index("\n")]
             legendary = legendary[legendary.index("\n")+1:]
 
-        rarities = {"common":common, "rare":rare, "epic":epic, "legendary":legendary}
-        for rarity in rarities:
-
-            if len(rarities[rarity]):
-                to_add = 1
-                while len(rarities[rarity]) > 1024:
-                    print(len(rarities[rarity]))
-                    index_of_newline = 1024-rarities[rarity][:1024][::-1].index("\n")
-                    e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity][:index_of_newline], inline=True)
-                    rarities[rarity] = rarities[rarity][index_of_newline:]
-                    to_add += 1
-                e.add_field(name=f"{rarity} {to_add}", value=rarities[rarity], inline=True)
+        
+            e.add_field(name=f"common {num_of_each[0]}/{len(self.common)}", value=common, inline=True)
+            e.add_field(name=f"rare {num_of_each[1]}/{len(self.rare)}",value=rare,inline=True)
+            e.add_field(name=f"epic {num_of_each[2]}/{len(self.epic)}",value=epic,inline=True)
+            e.add_field(name=f"legandary {num_of_each[3]}/{len(self.legendary)}",value=legendary,inline=True)
+            
 
 
         await ctx.send(embed=e)
