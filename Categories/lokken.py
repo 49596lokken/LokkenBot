@@ -6,7 +6,7 @@ import subprocess
 
 
 class Lokken(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot=bot
 
 
@@ -35,6 +35,38 @@ class Lokken(commands.Cog):
             await ctx.send("Done!")
             for extension in self.bot.extensions:
                 self.bot.reload_extension(extension)
+    
+
+    @commands.command(description="Sends a message in either a guild or DM")
+    @commands.is_owner()
+    async def send(self, ctx, place, *args):
+        args = [arg for arg in args]
+        if place.lower() == "dm":
+            user = await commands.MemberConverter().convert(ctx,args[0])
+            if user:
+                output = ""
+                for arg in args[1:]:
+                    output += arg+" "
+                await user.send(output)
+        elif place.lower() == "guild":
+            args = [arg for arg in args]
+            guild = args[0]
+            if not guild.isdigit():
+                await ctx.send("Not an integer")
+                return
+            channel = args[1]
+            if not channel.isdigit():
+                await ctx.send("Not a channel")
+                return
+            guild = self.bot.get_guild(int(guild))
+            if guild:
+                channel = guild.get_channel(int(channel))
+                if channel:
+                    output = ""
+                    for arg in args[2:]:
+                        output += arg+" "
+                    await channel.send(output)
+        
 
             
 
