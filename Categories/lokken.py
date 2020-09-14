@@ -38,7 +38,7 @@ class Lokken(commands.Cog):
     
 
     @commands.command(description="Sends a message in either a guild or DM")
-    @commands.is_owner()
+    @is_creator()
     async def send(self, ctx, place, *args):
         args = [arg for arg in args]
         if place.lower() == "dm":
