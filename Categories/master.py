@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import random
-
+import typing
 
 class Games(commands.Cog):
     def __init__(self, bot):
@@ -29,8 +29,9 @@ class Games(commands.Cog):
             raise(InvalidPiece)
 
     @master.command(description="Starts a game of mastermind against the specified opponent (can play against the bot)")
-    async def start(self, ctx, opponent: commands.MemberConverter):
-        
+    async def start(self, ctx, opponent: typing.Optional[commands.MemberConverter]):
+        if not opponent:
+            opponent = self.bot.user
         await ctx.send("Let's play!")
         if opponent.id == self.bot.user.id:
             if ctx.author in self.games:
