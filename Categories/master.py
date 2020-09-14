@@ -116,7 +116,10 @@ class Games(commands.Cog):
                 await ctx.send(f"You beat {game.opponent.display_name} in {game.turns_taken} tries!")
             del(self.games[ctx.author])
         elif game.turns_taken > 11:
-            await ctx.send(f"You lose!\n The correct code was {game.code}")
+            code = ""
+            for piece in game.code:
+                code += piece
+            await ctx.send(f"You lose!\n The correct code was {code}")
             await ctx.send(game.board)
             del self.games[ctx.author]
     
