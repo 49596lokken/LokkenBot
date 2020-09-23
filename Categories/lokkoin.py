@@ -1,9 +1,11 @@
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 import asyncio
 import random
 from checks import *
 import typing
+import datetime
 
 
 class lokkoin(commands.Cog):
@@ -13,11 +15,36 @@ class lokkoin(commands.Cog):
         self.balances = {i[:i.index(" ")]:int(i[i.index(" "):-1]) for i in f}
         f.close()
         self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F48E", "\U0001F34B"]
+        self.claimed_today = []
+        self.new_day = None
+        coro = self.new_daily_coins()
+        future = asyncio.ensure_future(coro)
+
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print("HIYA")
+        await self.new_daily_coins()
+        print("HUDFSU")
+
+    @tasks.loop(hours=24)
+    async def daily_loop(self):
+        await self.new_daily_coins()
+    
+    async def new_daily_coins(self):
+        print("updating the thingy")
+        self.new_day = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        self.claimed_today = []
+    
 
     async def get_balance(self, user):
         if user in self.balances:
             return(self.balances[user])
-        return(None)
+        f = open("data/lokkoin/balances", "a")
+        f.write(f"{user.id} 200\n")
+        self.balances[str(user.id)] = 200
+        
+        return(200)
 
     async def add_coins(self, user, coins: int):
         self.balances[user] += coins
@@ -47,15 +74,14 @@ class lokkoin(commands.Cog):
             return
         await ctx.send(f"The balance of {player.name} is: {amount}")
     
-    @commands.command(description="Registers you to earn lokkoins")
-    async def register(self,ctx):
-        if str(ctx.author.id) in self.balances:
-            await ctx.send("You are already registered")
+    @commands.command(description="Gives you your daily salary")
+    async def daily(self, ctx):
+        if ctx.author in self.claimed_today:
+            await ctx.send(f"You have already claimed today\nYou can claim in {self.new_day-datetime.datetime.utcnow()}")
             return
-        f = open("data/lokkoin/balances", "a")
-        f.write(f"{ctx.author.id} 200\n")
-        self.balances[str(ctx.author.id)] = 200
-        await ctx.send("Successfully registered. Your balance is 200 lokkoins!")
+        self.claimed_today.append(ctx.author)
+        await self.add_coins(str(ctx.author.id), 50)
+        await ctx.send("Added your 50 daily coins")
 
     @commands.command(description="Pays a person a set number of lokkoins")
     async def pay(self, ctx, payee: commands.MemberConverter, amount: int):
