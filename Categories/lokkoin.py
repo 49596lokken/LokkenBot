@@ -18,21 +18,18 @@ class lokkoin(commands.Cog):
         self.claimed_today = []
         self.new_day = None
         coro = self.new_daily_coins()
-        future = asyncio.ensure_future(coro)
+        asyncio.ensure_future(coro)
+        self.daily_loop.start()
+    
+    def cog_unload(self):
+        self.daily_loop.stop()
 
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("HIYA")
-        await self.new_daily_coins()
-        print("HUDFSU")
-
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=24.0)
     async def daily_loop(self):
         await self.new_daily_coins()
     
     async def new_daily_coins(self):
-        print("updating the thingy")
         self.new_day = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         self.claimed_today = []
     
@@ -82,6 +79,10 @@ class lokkoin(commands.Cog):
         self.claimed_today.append(ctx.author)
         await self.add_coins(str(ctx.author.id), 50)
         await ctx.send("Added your 50 daily coins")
+
+    @commands.command()
+    async def change_day(self, ctx):
+        await self.new_daily_coins()
 
     @commands.command(description="Pays a person a set number of lokkoins")
     async def pay(self, ctx, payee: commands.MemberConverter, amount: int):
