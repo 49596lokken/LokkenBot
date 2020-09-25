@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import random
 import datetime
-from checks import *
 
 class useful(commands.Cog):
     def __init__(self, bot):
@@ -10,12 +9,7 @@ class useful(commands.Cog):
         self.alphabet = [chr(i) for i in range(65,91)]
         self.alphabet.append(" ")
         self.all_characters = [chr(i) for i in range(32, 127)]
-    
-    @commands.command(description="prints a line to the console - for debug")
-    @is_creator()
-    async def print(self, ctx):
-        print(ctx.message.content)
-    
+
     
     @commands.command(description="encodes a piece of text according to an algorithm. Encoding is the same as decoding")
     async def encode(self, ctx, password, number: int, *message):

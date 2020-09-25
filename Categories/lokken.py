@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from checks import *
 import sys
 import subprocess
 
@@ -10,14 +9,15 @@ class Lokken(commands.Cog):
         self.bot=bot
 
 
+    async def cog_check(self,ctx):
+        return(ctx.author.id == 360493765154045952)
+
     @commands.command()
-    @is_creator()
     async def kill(self, ctx):
         await ctx.message.add_reaction("\U0001f44b")
         sys.exit()
     
     @commands.command(description="updates the bot")
-    @is_creator()
     async def update(self, ctx, *commit_name):
         output = ""
         for word in commit_name:
@@ -38,7 +38,6 @@ class Lokken(commands.Cog):
     
 
     @commands.command(description="Sends a message in either a guild or DM")
-    @is_creator()
     async def send(self, ctx, place, *args):
         args = [arg for arg in args]
         if place.lower() == "dm":
@@ -66,8 +65,45 @@ class Lokken(commands.Cog):
                     for arg in args[2:]:
                         output += arg+" "
                     await channel.send(output)
-        
 
+
+    @commands.command(description="Sets the balance of a person")
+    async def set_coins(self, ctx,  player: commands.MemberConverter, coins: int):
+        f = open("data/lokkoin/balances", "r")
+        to_write = ""
+        found = False
+        for line in f:
+            if line[:line.index(" ")] == str(player.id):
+                line = f"{player.id} {coins}\n"
+            to_write += line
+        f.close()
+        if not found:
+            to_write += f"{player.id} {coins}\n"
+        f = open("data/lokkoin/balances", "w")
+        f.write(to_write)
+        f.close()
+
+    @commands.command(description="Prints a Line to the console")
+    async def print(self, ctx,*, to_print):
+        print(to_print)
+
+    @commands.command(description="Reloads a cog")
+    async def reload(self,ctx, cog_name):
+        self.bot.reload_extension(f"Categories.{cog_name}")
+        await ctx.send(f"{cog_name} has been reloaded")
+
+
+    @commands.command(description="Unloads a Cog")
+    async def unload(self,ctx, cog_name):
+        self.bot.remove_cog(cog_name)
+        self.bot.unload_extension(f"Categories.{cog_name}")
+        await ctx.send(f"{cog_name} has been unloaded")
+
+
+    @commands.command(description="Loads a Cog")
+    async def load(self,ctx, cog_name):
+        self.bot.load_extension(f"Categories.{cog_name}")
+        await ctx.send(f"{cog_name} has been loaded")                
             
 
 

@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from checks import *
 import sys
 import os
 
@@ -49,26 +48,7 @@ for category in categories:
     
 
 
-@bot.command()
-@bot.check(is_creator())
-async def reload(ctx, cog_name):
-    bot.reload_extension(f"Categories.{cog_name}")
-    await ctx.send(f"{cog_name} has been reloaded")
 
-
-@bot.command()
-@bot.check(is_creator())
-async def unload(ctx, cog_name):
-    bot.remove_cog(cog_name)
-    bot.unload_extension(f"Categories.{cog_name}")
-    await ctx.send(f"{cog_name} has been unloaded")
-
-
-@bot.command()
-@bot.check(is_creator())
-async def load(ctx, cog_name):
-    bot.load_extension(f"Categories.{cog_name}")
-    await ctx.send(f"{cog_name} has been loaded")
 
 
 

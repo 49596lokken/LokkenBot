@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import asyncio
 import random
-from checks import *
 import typing
 import datetime
 
@@ -22,7 +21,7 @@ class lokkoin(commands.Cog):
         self.daily_loop.start()
     
     def cog_unload(self):
-        self.daily_loop.stop()
+        self.daily_loop.cancel()
 
 
     @tasks.loop(hours=24.0)
@@ -150,18 +149,8 @@ class lokkoin(commands.Cog):
         await ctx.send("Sorry, you lost...")
 
 
-    @commands.command(description="Sets the balance of a person")
-    @is_creator()
-    async def set_coins(self, ctx,  player: commands.MemberConverter, coins: int):
-        balance = await self.get_balance(str(player.id))
-        if balance == None:
-            await ctx.send("This player hasn't registered")
-            return
-        if coins < balance:
-            await self.remove_coins(str(player.id), balance-coins)
-        elif coins > balance:
-            await self.add_coins(str(player.id), coins-balance)
-        await ctx.send("Balance updated")
+
+    
 
 
     
