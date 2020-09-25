@@ -83,7 +83,7 @@ class Lokken(commands.Cog):
         f.write(to_write)
         f.close()
         try:
-            self.bot.reload_extension("Categories.lokkoin")
+            await self.bot.reload_extension("Categories.lokkoin")
         except:
             pass
         await ctx.send(f"The balance is now {coins}")
