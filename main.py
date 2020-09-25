@@ -40,10 +40,11 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
 categories = os.listdir("Categories")[:-1]
 for category in categories:
-    try:
-        bot.load_extension(f"Categories.{category[:-3]}")
-    except Exception as e:
-        print(e)
+    if category.endswith(".py"):
+        try:
+            bot.load_extension(f"Categories.{category[:-3]}")
+        except Exception as e:
+            print(e)
     
     
 

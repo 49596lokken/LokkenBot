@@ -82,6 +82,11 @@ class Lokken(commands.Cog):
         f = open("data/lokkoin/balances", "w")
         f.write(to_write)
         f.close()
+        try:
+            self.bot.reload_extension("Categories.lokkoin")
+        except:
+            pass
+        await ctx.send(f"The balance is now {coins}")
 
     @commands.command(description="Prints a Line to the console")
     async def print(self, ctx,*, to_print):
