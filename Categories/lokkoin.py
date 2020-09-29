@@ -37,8 +37,8 @@ class lokkoin(commands.Cog):
         if user in self.balances:
             return(self.balances[user])
         f = open("data/lokkoin/balances", "a")
-        f.write(f"{user.id} 200\n")
-        self.balances[str(user.id)] = 200
+        f.write(f"{user} 200\n")
+        self.balances[user] = 200
         
         return(200)
 
