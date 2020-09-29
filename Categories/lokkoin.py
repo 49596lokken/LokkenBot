@@ -79,9 +79,7 @@ class lokkoin(commands.Cog):
         await self.add_coins(str(ctx.author.id), 50)
         await ctx.send("Added your 50 daily coins")
 
-    @commands.command()
-    async def change_day(self, ctx):
-        await self.new_daily_coins()
+
 
     @commands.command(description="Pays a person a set number of lokkoins")
     async def pay(self, ctx, payee: commands.MemberConverter, amount: int):
