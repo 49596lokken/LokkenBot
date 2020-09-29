@@ -91,24 +91,9 @@ class Lokken(commands.Cog):
     @commands.command(description="Prints a Line to the console")
     async def print(self, ctx,*, to_print):
         print(to_print)
+                
+    
 
-    @commands.command(description="Reloads a cog")
-    async def reload(self,ctx, cog_name):
-        self.bot.reload_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been reloaded")
-
-
-    @commands.command(description="Unloads a Cog")
-    async def unload(self,ctx, cog_name):
-        self.bot.remove_cog(cog_name)
-        self.bot.unload_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been unloaded")
-
-
-    @commands.command(description="Loads a Cog")
-    async def load(self,ctx, cog_name):
-        self.bot.load_extension(f"Categories.{cog_name}")
-        await ctx.send(f"{cog_name} has been loaded")                
             
 
 

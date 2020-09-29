@@ -5,18 +5,28 @@ import os
 
 def findprefix(bot, message):
     if not message.guild:
-        return("")
+        f = open("data/prefixes-dm", "r")
+        for line in f:
+            if line[:line.index(":")] == str(message.author .id):
+                f.close()
+                return(line[line.index(":")+1:-1])
+        f.close()
+        f = open("data/prefixes-dm", "a")
+        f.write(f"{message.author.id}:-\n")
+        f.close()
+        return("-")
+
     if bot.user.name == "LokkenTestBot":
         default_prefix = "^"
     else:
         default_prefix = "%"
-    f = open("prefixes", "r")
+    f = open("data/prefixes", "r")
     for line in f:
         if line[:line.index(":")] == str(message.guild.id):
             f.close()
             return(line[line.index(":")+1:-1])
     f.close()
-    f = open("prefixes", "a")
+    f = open("data/prefixes", "a")
     f.write(f"{message.guild.id}:{default_prefix}\n")
     f.close()
     return(default_prefix)
@@ -45,7 +55,26 @@ for category in categories:
             bot.load_extension(f"Categories.{category[:-3]}")
         except Exception as e:
             print(e)
-    
+
+
+@bot.command(description="Reloads a cog")
+async def reload(ctx, cog_name):
+    bot.reload_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been reloaded")
+
+
+@bot.command(description="Unloads a Cog")
+async def unload(ctx, cog_name):
+    bot.remove_cog(cog_name)
+    bot.unload_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been unloaded")
+
+
+@bot.command(description="Loads a Cog")
+async def load(ctx, cog_name):
+    bot.load_extension(f"Categories.{cog_name}")
+    await ctx.send(f"{cog_name} has been loaded")
+
     
 
 

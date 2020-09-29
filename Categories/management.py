@@ -10,11 +10,24 @@ class management(commands.Cog):
 
 
     @commands.command(aliases=["set_prefix"],description="Changes the prefix for the bot in the server")
-    @commands.has_permissions(manage_guild=True)
+    @commands.check_any(commands.has_permissions(manage_guild=True), commands.dm_only())
     async def change_prefix(self, ctx, new_prefix):
         if not ctx.guild:
-            await ctx.send("I have no prefix in DMs")
-        f = open("prefixes", "r")
+            f=open("data/prefixes-dm", "r")
+            await ctx.send("RIGHT?")
+            prefixes = f.read().split("\n")[:-1]
+            f.close()
+            for i in range(len(prefixes)):
+                if prefixes[i][:prefixes[i].index(":")] == str(ctx.author.id):
+                    prefixes[i] = f"{ctx.author.id}:{new_prefix}"
+                    await ctx.send("Prefix changed")
+            output = ""
+            f=open("data/prefixes-dm", "w+")
+            for user in prefixes:
+                output += f"{user}\n"
+            f.write(output)
+            return
+        f = open("data/prefixes", "r")
         prefixes = f.read().split("\n")[:-1]
         f.close()
         for i in range(len(prefixes)):
@@ -22,7 +35,7 @@ class management(commands.Cog):
                 prefixes[i] = f"{ctx.guild.id}:{new_prefix}"
                 await ctx.send("Prefix changed")
         output = ""
-        f=open("prefixes", "w+")
+        f=open("data/prefixes", "w+")
         for guild in prefixes:
             output += f"{guild}\n"
         f.write(output)

@@ -4,10 +4,10 @@ import inspect
 
 
 class none(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot=bot
 
-    @commands.command(name="help", brief="shows this message")
+    @commands.command(name="help", brief="shows this message", aliases=["h", "he", "hel", "hell"])
     async def help_command(self, ctx, *request):
         request = [i.lower() for i in request]
         categories = {"none":[]}
@@ -16,7 +16,8 @@ class none(commands.Cog):
             if not cog:
                 categories["none"].append(command)
             elif cog.qualified_name.lower() in categories:
-                categories[cog.qualified_name.lower()].append(command)
+                if not command in categories[cog.qualified_name.lower()]:
+                    categories[cog.qualified_name.lower()].append(command)
             else:
                 categories[cog.qualified_name.lower()] = [command]
         if len(request) != 0:
@@ -25,7 +26,8 @@ class none(commands.Cog):
                 for command in categories[request[0]]:
                     try:
                         checks = command.checks
-                        if [check(ctx) for check in checks] == [True for check in checks]:
+                        await ctx.send(str(checks))
+                        if [await check(ctx) for check in checks] == [True for check in checks]:
                             if command.brief:
                                 description += f"{command.name} - {command.brief}\n"
                             else:
@@ -52,7 +54,7 @@ class none(commands.Cog):
                     if not command in search_in:
                         break
                     checks = search_in[command].checks
-                    if [check(ctx) for check in checks] != [True for check in checks]:
+                    if [await check(ctx) for check in checks] != [True for check in checks]:
                         break
                     last_command = search_in[command]
                     full_command += command+" "
@@ -75,7 +77,7 @@ class none(commands.Cog):
                     for command in search_in:
                         try:
                             checks = command.checks
-                            if [check(ctx) for check in checks] == [True for check in checks]:
+                            if [await check(ctx) for check in checks] == [True for check in checks]:
                                 value += command.name
                                 brief = command.brief
                                 if brief:
@@ -97,6 +99,12 @@ class none(commands.Cog):
                     if parameter_types:
                         e.add_field(name="Parameters",value=parameter_types)
                     e.set_footer(text=f"{ctx.prefix}{full_command} {output}")
+                    aliases = last_command.aliases
+                    if aliases:
+                        value = ""
+                        for alias in aliases:
+                            value += alias+"\n"
+                        e.add_field(name="Aliases", value=value)
                 await ctx.send(embed=e)
                     
 
@@ -114,7 +122,7 @@ class none(commands.Cog):
                 for command in categories[category]:
                     checks = command.checks
                     try:
-                        if [check(ctx) for check in checks] == [True for check in checks]:
+                        if [await check(ctx) for check in checks] == [True for check in checks]:
                             if command.brief:
                                 value += f"{command.name} - {command.brief}\n"
                             else:
