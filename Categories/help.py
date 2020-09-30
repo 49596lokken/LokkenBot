@@ -26,7 +26,6 @@ class none(commands.Cog):
                 for command in categories[request[0]]:
                     try:
                         checks = command.checks
-                        await ctx.send(str(checks))
                         if [await check(ctx) for check in checks] == [True for check in checks]:
                             if command.brief:
                                 description += f"{command.name} - {command.brief}\n"
