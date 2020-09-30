@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import datetime
+import sys
 
 class useful(commands.Cog):
     def __init__(self, bot):
@@ -54,7 +55,18 @@ class useful(commands.Cog):
     async def ping(self, ctx):
         now = datetime.datetime.utcnow()
         await ctx.send(f"The ping is: ```{round((now-ctx.message.created_at).total_seconds()*1000)}ms```")
-
+    
+    @commands.command(description="Tells you about the bot")
+    async def info(self, ctx):
+        version = sys.version[:sys.version.index(" ")]
+        f = open("README.md", "r")
+        extra_info=f.read()
+        f.close()
+        extra_info = extra_info[extra_info.index("\n"):]
+        if self.bot.user.id!=698859232329596988:
+            extra_info = extra_info.replace("698859232329596988", str(self.bot.user.id))
+        e = discord.Embed(title=f"{self.bot.user.name} Info" ,description=f"Running on discord.py version: {discord.__version__}\nPython Version: {version}\nCurrently in {len(self.bot.guilds)} different servers{extra_info}")
+        await ctx.send(embed=e)
 
 
 
