@@ -25,13 +25,12 @@ class none(commands.Cog):
                 description = ""
                 for command in categories[request[0]]:
                     try:
-                        checks = command.checks
-                        if [await check(ctx) for check in checks] == [True for check in checks]:
+                        if await command.can_run(ctx):
                             if command.brief:
                                 description += f"{command.name} - {command.brief}\n"
                             else:
                                 description += f"{command.name}\n"
-                    except commands.CommandError:
+                    except commands.MissingPermissions:
                         pass
                 if description:
                     e = discord.Embed(title=f"{self.bot.user.name} help for {request[0]} category", description=description)
@@ -52,8 +51,10 @@ class none(commands.Cog):
                     #loops through the request for command groups
                     if not command in search_in:
                         break
-                    checks = search_in[command].checks
-                    if [await check(ctx) for check in checks] != [True for check in checks]:
+                    try:
+                        if not await command.can_run(ctx):
+                            break
+                    except commands.MissingPermissions:
                         break
                     last_command = search_in[command]
                     full_command += command+" "
@@ -75,14 +76,13 @@ class none(commands.Cog):
                     value = ""
                     for command in search_in:
                         try:
-                            checks = command.checks
-                            if [await check(ctx) for check in checks] == [True for check in checks]:
+                            if await command.can_run(ctx):
                                 value += command.name
                                 brief = command.brief
                                 if brief:
                                     value += f" - {brief}"
                                 value += "\n"
-                        except commands.CommandError:
+                        except commands.MissingPermissions:
                             pass
                     e.add_field(name="commands", value=value)
                 else:
@@ -119,15 +119,15 @@ class none(commands.Cog):
             for category in categories:
                 value = ""
                 for command in categories[category]:
-                    checks = command.checks
                     try:
-                        if [await check(ctx) for check in checks] == [True for check in checks]:
+                        if await command.can_run(ctx):
                             if command.brief:
                                 value += f"{command.name} - {command.brief}\n"
                             else:
                                 value += f"{command.name}\n"
-                    except commands.CommandError:
+                    except commands.MissingPermissions:
                         pass
+
                 if len(value) != 0:
                     e.add_field(name=category, value=value, inline=False)
             await ctx.send(embed=e)
