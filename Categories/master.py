@@ -29,10 +29,6 @@ class Games(commands.Cog):
 
     @master.command(description="Starts a game of mastermind against the specified opponent (can play against the bot)")
     async def start(self, ctx, opponent: typing.Optional[commands.MemberConverter]):
-        if (not opponent) or (opponent.id == self.bot.user.id) :
-            opponent = ctx.author
-            await ctx.send("Playing against me!")
-            code = [random.choice(self.pieces) for i in range(4)]
         else:
             await ctx.author.send(f"As you started the game, you get to make the code. Please enter the code without any spaces or extra characters. You are allowed to use:\n{self.valid_pieces}")
             def check(message):
@@ -98,6 +94,7 @@ class Games(commands.Cog):
                             await ctx.send("You get 100 lokkoins for beating me!")
                 else:
                     await ctx.send(f"You beat {ctx.author.display_name} in {i+1} tries!")
+                break
             await ctx.send(board)
 
         to_send = ""
@@ -107,11 +104,7 @@ class Games(commands.Cog):
         await ctx.send(board)
             
 
-            
 
-
-        
-    
     @master.command(description="Shows you the valid pieces in a game of mastermind")
     async def valid(self, ctx):
         await ctx.send(self.valid_pieces)
