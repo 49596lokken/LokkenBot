@@ -156,7 +156,7 @@ class Games(commands.Cog):
             if lokkoin:
                 if await lokkoin.get_balance(str(winner[0].id)) != None:
                     await lokkoin.add_coins(str(winner[0].id), 100)
-                    await ctx.send(f"{winner.display_name} gets 100 lokkoins for winning!")
+                    await ctx.send(f"{winner[0].display_name} gets 100 lokkoins for winning!")
             return
         await ctx.send(f"{game.players[game.turns_taken%len(game.players)].mention} its your turn")
         
