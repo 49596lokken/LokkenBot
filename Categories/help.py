@@ -52,7 +52,7 @@ class none(commands.Cog):
                     if not command in search_in:
                         break
                     try:
-                        if not await command.can_run(ctx):
+                        if not await search_in[command].can_run(ctx):
                             break
                     except commands.MissingPermissions:
                         break
