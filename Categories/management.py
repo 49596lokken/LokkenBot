@@ -45,6 +45,7 @@ class management(commands.Cog):
     async def update_username(self, ctx, brackets=None, place=None):
         if not ctx.guild:
             await ctx.send("I have no nickname here")
+            return
         if not brackets:
             await ctx.send("Resetting username")
             await ctx.guild.me.edit(nick=self.bot.user.name)
