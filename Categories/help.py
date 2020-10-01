@@ -125,7 +125,7 @@ class none(commands.Cog):
                                 value += f"{command.name} - {command.brief}\n"
                             else:
                                 value += f"{command.name}\n"
-                    except commands.MissingPermissions:
+                    except commands.CheckAnyFailure:
                         pass
 
                 if len(value) != 0:

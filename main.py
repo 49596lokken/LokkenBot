@@ -75,15 +75,6 @@ async def load(ctx, cog_name):
     bot.load_extension(f"Categories.{cog_name}")
     await ctx.send(f"{cog_name} has been loaded")
 
-    
-
-
-
-
-
-
-
-
 
 
 TOKEN = open("token", "r").read()
