@@ -96,7 +96,7 @@ class Lokken(commands.Cog):
         if ctx.guild.id != 721340744207695903:
             await ctx.send("NOT HERE")
             return
-        await ctx.channel.purge()
+        await ctx.channel.purge(limit=1000)
 
     @commands.command(description="Prints a Line to the console")
     async def print(self, ctx,*, to_print):
