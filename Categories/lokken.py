@@ -37,7 +37,7 @@ class Lokken(commands.Cog):
                 self.bot.reload_extension(extension)
     
 
-    @commands.command(description="Sends a message in either a guild or DM")
+    @commands.command(description="Sends a message in either a guild or DM.")
     async def send(self, ctx, place, actual_place,*, to_send):
         if place.lower() == "dm":
             user = await commands.MemberConverter().convert(ctx,actual_place)
