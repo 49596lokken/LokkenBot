@@ -38,33 +38,17 @@ class Lokken(commands.Cog):
     
 
     @commands.command(description="Sends a message in either a guild or DM")
-    async def send(self, ctx, place, *args):
-        args = [arg for arg in args]
+    async def send(self, ctx, place, actual_place,*, to_send):
         if place.lower() == "dm":
-            user = await commands.MemberConverter().convert(ctx,args[0])
+            user = await commands.MemberConverter().convert(ctx,actual_place)
             if user:
-                output = ""
-                for arg in args[1:]:
-                    output += arg+" "
-                await user.send(output)
+                await user.send(to_send)
         elif place.lower() == "guild":
-            args = [arg for arg in args]
-            guild = args[0]
-            if not guild.isdigit():
-                await ctx.send("Not an integer")
+            channel = await commands.TextChannelConverter().convert(ctx,actual_place)
+            if not channel:
+                await ctx.send("No channel")
                 return
-            channel = args[1]
-            if not channel.isdigit():
-                await ctx.send("Not a channel")
-                return
-            guild = self.bot.get_guild(int(guild))
-            if guild:
-                channel = guild.get_channel(int(channel))
-                if channel:
-                    output = ""
-                    for arg in args[2:]:
-                        output += arg+" "
-                    await channel.send(output)
+            await channel.send(to_send)
 
 
     @commands.command(description="Sets the balance of a person")
