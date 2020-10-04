@@ -14,7 +14,6 @@ class management(commands.Cog):
     async def change_prefix(self, ctx, new_prefix):
         if not ctx.guild:
             f=open("data/prefixes-dm", "r")
-            await ctx.send("RIGHT?")
             prefixes = f.read().split("\n")[:-1]
             f.close()
             for i in range(len(prefixes)):
