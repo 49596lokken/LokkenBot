@@ -85,6 +85,10 @@ class Lokken(commands.Cog):
     @commands.command(description="Prints a Line to the console")
     async def print(self, ctx,*, to_print):
         print(to_print)
+
+    @commands.command()
+    async def all(self, ctx):
+        await ctx.send("".join(i.name+" " for i in self.bot.get_all_members()))
                 
     
 

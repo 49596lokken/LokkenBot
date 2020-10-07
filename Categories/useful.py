@@ -65,7 +65,7 @@ class useful(commands.Cog):
         extra_info = extra_info[extra_info.index("\n"):]
         if self.bot.user.id!=698859232329596988:
             extra_info = extra_info.replace("698859232329596988", str(self.bot.user.id))
-        e = discord.Embed(title=f"{self.bot.user.name} Info" ,description=f"Running on discord.py version: {discord.__version__}\nPython Version: {version}\nCurrently in {len(self.bot.guilds)} different servers\nGithub - [here](https://github.com/49596lokken/{self.bot.user.name}){extra_info}")
+        e = discord.Embed(title=f"{self.bot.user.name} Info" ,description=f"Running on discord.py version: {discord.__version__}\nPython Version: {version}\nCurrently in {len(self.bot.guilds)} different servers\nGithub - [here](https://github.com/49596lokken/LokkenBot){extra_info}")
         await ctx.send(embed=e)
 
 
