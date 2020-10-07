@@ -8,15 +8,14 @@ class useful(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         self.alphabet = [chr(i) for i in range(65,91)]
-        self.alphabet.append(" ")
+        self.alphabet.extend(" ")
+        self.alphabet.extend([str(i) for i in range(10)])
         self.all_characters = [chr(i) for i in range(32, 127)]
 
     
-    @commands.command(description="encodes a piece of text according to an algorithm. Encoding is the same as decoding")
-    async def encode(self, ctx, password, number: int, *message):
-        to_encode =""
-        for word in message:
-            to_encode += word+" "
+    @commands.command(description="encodes a piece of text according to an algorithm. Encoding is the same as decoding",rest_is_raw=True)
+    async def encode(self, ctx, password, number: int, *,message):
+        message = message[1:]   
         output = ""
         target_sum = 0
         for char in password:
@@ -24,13 +23,13 @@ class useful(commands.Cog):
                 await ctx.send(f"character: \"{char}\" not supported")
                 return
             target_sum += self.all_characters.index(char)
-        for char in to_encode:
+        for char in message:
             target_sum %= len(self.all_characters)
             if not char in self.all_characters:
                 await ctx.send(f"character: \"{char}\" not supported")
                 return
             new_char = self.all_characters[(target_sum-self.all_characters.index(char)%len(self.all_characters))]
-            output += "\\"*int(not new_char.upper())+new_char
+            output += "\\"*int(not new_char.upper() in self.alphabet)+new_char
             target_sum += number
         if output[0] == " ":
             i = 1
@@ -43,6 +42,13 @@ class useful(commands.Cog):
                 i += 1
             await ctx.send(f"{i} space(s) at the end")
 
+        await ctx.send(output)
+    
+    @commands.command()
+    async def delete_me(self, ctx):
+        output = ""
+        for char in self.all_characters:
+            output += "\\"*int(not char.upper() in self.alphabet)+char
         await ctx.send(output)
     
     @commands.command(description="sends you an invite to the test server")
