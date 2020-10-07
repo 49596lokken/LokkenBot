@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import sys
 import os
+intents = discord.Intents.default()
+intents.members = True
 
 def findprefix(bot, message):
     if not message.guild:
@@ -31,7 +33,7 @@ def findprefix(bot, message):
     f.close()
     return(default_prefix)
 
-bot = commands.Bot(command_prefix=findprefix, case_insensitive=True, help_command=None)
+bot = commands.Bot(command_prefix=findprefix, case_insensitive=True, help_command=None,intents=intents)
 
 @bot.event
 async def on_message(message):
