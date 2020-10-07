@@ -61,7 +61,7 @@ class lokkoin(commands.Cog):
         f.close()
 
     @commands.command(description="Sends the balance of a player (default is the author)")
-    async def balance(self,ctx, player: typing.Optional[commands.UserConverter]):
+    async def balance(self,ctx, player: typing.Optional[commands.MemberConverter]):
         if not player:
             player = ctx.author
         amount = await self.get_balance(str(player.id))
@@ -82,7 +82,7 @@ class lokkoin(commands.Cog):
 
 
     @commands.command(description="Pays a person a set number of lokkoins")
-    async def pay(self, ctx, payee: commands.UserConverter, amount: int):
+    async def pay(self, ctx, payee: commands.MemberConverter, amount: int):
         if not str(ctx.author.id) in self.balances:
             await ctx.send("You need to register for lokkoins")
             return
