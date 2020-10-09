@@ -3,7 +3,7 @@ from discord.ext import commands
 import inspect
 
 
-class none(commands.Cog):
+class HelpCommand(commands.Cog, name="none"):
     def __init__(self, bot: commands.Bot):
         self.bot=bot
 
@@ -91,6 +91,8 @@ class none(commands.Cog):
                         output += f"[{param}] "
                         if params[param].annotation != inspect.Parameter.empty:
                             param_type = str(params[param]).lower()
+                            if params[param].kind == params[param].VAR_POSITIONAL:
+                                param_type += "s"
                             for i in ["union", ".", "discord", "ext", "commands", "converter", ", nonetype", "[", "]"]:
                                 param_type = param_type.replace(i,"")
                             parameter_types += f"{param_type}\n"
@@ -135,4 +137,4 @@ class none(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(none(bot))
+    bot.add_cog(HelpCommand(bot))

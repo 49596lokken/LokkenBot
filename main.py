@@ -58,14 +58,20 @@ for category in categories:
         except Exception as e:
             print(e)
 
+@commands.check
+async def is_me(ctx):
+    return(ctx.author.id == 360493765154045952)
+
 
 @bot.command(description="Reloads a cog")
+@is_me
 async def reload(ctx, cog_name):
     bot.reload_extension(f"Categories.{cog_name}")
     await ctx.send(f"{cog_name} has been reloaded")
 
 
 @bot.command(description="Unloads a Cog")
+@is_me
 async def unload(ctx, cog_name):
     bot.remove_cog(cog_name)
     bot.unload_extension(f"Categories.{cog_name}")
@@ -73,6 +79,7 @@ async def unload(ctx, cog_name):
 
 
 @bot.command(description="Loads a Cog")
+@is_me
 async def load(ctx, cog_name):
     bot.load_extension(f"Categories.{cog_name}")
     await ctx.send(f"{cog_name} has been loaded")

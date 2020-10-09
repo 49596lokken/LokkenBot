@@ -44,13 +44,6 @@ class useful(commands.Cog):
 
         await ctx.send(output)
     
-    @commands.command()
-    async def delete_me(self, ctx):
-        output = ""
-        for char in self.all_characters:
-            output += "\\"*int(not char.upper() in self.alphabet)+char
-        await ctx.send(output)
-    
     @commands.command(description="sends you an invite to the test server")
     async def test(self, ctx):
         main_channel = self.bot.get_channel(731187247449243658)
