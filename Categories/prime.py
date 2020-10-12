@@ -94,18 +94,16 @@ class PrimeGame(commands.Cog, name="games"):
             player = players[playernum]
             await ctx.send(f"{player.mention} It's your turn!\nSend a prime number under 1000000 within 5 seconds or you lose!")
             def check(m):
-                if m.author.id == player.id and m.channel.id == ctx.channel.id and m.content.isdigit():
-                    if int(m.content) < 1000000:
-                        return(True)
-                    return(False)
-                else:
-                    return(False)
+                return(m.author.id == player.id and m.channel.id == ctx.channel.id and m.content.isdigit())
             try:
                 msg = await self.bot.wait_for("message", check=check, timeout=5)
-                if not await self.is_prime(int(msg.content)):
+                if int(msg.content) < 1000000:
+                    await ctx.send(f"Sorry {msg.auhtor.mention} That number is too big so you are now out of the game")
+                    lost = True
+                elif not await self.is_prime(int(msg.content)):
                     await ctx.send(f"Sorry {player.mention}, The number {msg.content} is not prime so you are now out of the game")
                     lost = True
-                if int(msg.content) in already_had:
+                elif int(msg.content) in already_had:
                     await ctx.send(f"Sorry {player.mention}, The number {msg.content} is not prime so you are now out of the game")
                     lost = True
             except asyncio.TimeoutError:
@@ -120,7 +118,6 @@ class PrimeGame(commands.Cog, name="games"):
                     playing = False
             playernum += 1
             playernum %= len(players)
-        await ctx.send("SUCCESS!")
 
 
 
