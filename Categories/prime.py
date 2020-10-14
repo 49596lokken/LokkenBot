@@ -97,8 +97,8 @@ class PrimeGame(commands.Cog, name="games"):
                 return(m.author.id == player.id and m.channel.id == ctx.channel.id and m.content.isdigit())
             try:
                 msg = await self.bot.wait_for("message", check=check, timeout=5)
-                if int(msg.content) < 1000000:
-                    await ctx.send(f"Sorry {msg.auhtor.mention} That number is too big so you are now out of the game")
+                if int(msg.content) >= 1000000:
+                    await ctx.send(f"Sorry {msg.author.mention} That number is too big so you are now out of the game")
                     lost = True
                 elif not await self.is_prime(int(msg.content)):
                     await ctx.send(f"Sorry {player.mention}, The number {msg.content} is not prime so you are now out of the game")
