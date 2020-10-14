@@ -111,7 +111,7 @@ class PrimeGame(commands.Cog, name="games"):
                 await ctx.send(f"Sorry {player.mention}, You took too long and are now out of the game")
                 lost = True
             if lost:
-                next_player = players[playernum+1]
+                next_player = players[(playernum+1)%len(players)]
                 players.remove(player)
                 playernum = players.index(next_player)-1
                 if len(players) == 1:
