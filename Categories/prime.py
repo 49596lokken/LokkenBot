@@ -105,7 +105,7 @@ class PrimeGame(commands.Cog, name="games"):
                     await ctx.send(f"Sorry {player.mention}, The number {msg.content} is not prime so you are now out of the game")
                     lost = True
                 elif int(msg.content) in already_had:
-                    await ctx.send(f"Sorry {player.mention}, The number {msg.content} is not prime so you are now out of the game")
+                    await ctx.send(f"Sorry {player.mention}, The number {msg.content} has already been used so you are now out of the game")
                     lost = True
             except asyncio.TimeoutError:
                 await ctx.send(f"Sorry {player.mention}, You took too long and are now out of the game")
@@ -121,6 +121,8 @@ class PrimeGame(commands.Cog, name="games"):
                         await lokkoin.add_coins(str(next_player.id), self.reward)
                         await ctx.send(f"Well done {next_player.display_name}, you won {self.reward} lokkoins!")
                     playing = False
+            else:
+                already_had.append(int(msg.content))
             playernum += 1
             playernum %= len(players)
 
