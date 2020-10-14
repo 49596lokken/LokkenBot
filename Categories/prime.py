@@ -14,9 +14,9 @@ class PrimeGame(commands.Cog, name="games"):
 
     async def cog_check(self,ctx):
         if not ctx.guild:
-            await ctx.send("This game is only for servers")
             return(False)
         return(True)
+    
 
     async def gen_next_prime(self):
         test = self.primes[-1]+2
