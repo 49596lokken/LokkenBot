@@ -11,6 +11,7 @@ class PrimeGame(commands.Cog, name="games"):
         f=open("data/games/prime/channels", "r")
         self.channels = f.read().split("\n")[:-1]
         f.close()
+        self.reward = 50
 
     async def cog_check(self,ctx):
         if not ctx.guild:
@@ -115,6 +116,10 @@ class PrimeGame(commands.Cog, name="games"):
                 playernum = players.index(next_player)-1
                 if len(players) == 1:
                     await ctx.send(f"{next_player.mention} Wins! Well done!")
+                    lokkoin = self.bot.get_cog("lokkoin")
+                    if lokkoin:
+                        await lokkoin.add_coins(str(next_player.id), self.reward)
+                        await ctx.send(f"Well done {next_player.display_name}, you won {self.reward} lokkoins!")
                     playing = False
             playernum += 1
             playernum %= len(players)
