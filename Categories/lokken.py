@@ -86,9 +86,17 @@ class Lokken(commands.Cog):
     async def print(self, ctx,*, to_print):
         print(to_print)
 
-    @commands.command()
-    async def all(self, ctx):
-        await ctx.send("".join(i.name+" " for i in self.bot.get_all_members()))
+    @commands.command(description="Tells me who the rich people are")
+    async def all_balances(self, ctx):
+        f=open("data/lokkoin/balances", "r")
+        output = ""
+        for line in f:
+            person = self.bot.get_user(int(line[:line.index(" ")]))
+            if person:
+                balance = line[line.index(" "):-1]
+                output += f"{person.name} - {balance} coins\n"
+        await ctx.send(output)
+
                 
     
 
