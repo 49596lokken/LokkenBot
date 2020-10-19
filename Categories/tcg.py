@@ -209,11 +209,11 @@ class Tcg(commands.Cog):
             epic += legendary[:legendary.index("\n")]
             legendary = legendary[legendary.index("\n")+1:]
 
-        
-            e.add_field(name=f"common {num_of_each[0]}/{len(self.common)}", value=common, inline=True)
-            e.add_field(name=f"rare {num_of_each[1]}/{len(self.rare)}",value=rare,inline=True)
-            e.add_field(name=f"epic {num_of_each[2]}/{len(self.epic)}",value=epic,inline=True)
-            e.add_field(name=f"legandary {num_of_each[3]}/{len(self.legendary)}",value=legendary,inline=True)
+    
+        e.add_field(name=f"common {num_of_each[0]}/{len(self.common)}", value=common+int(num_of_each[0]==0)*"No cards", inline=True)
+        e.add_field(name=f"rare {num_of_each[1]}/{len(self.rare)}",value=rare+int(num_of_each[1]==0)*"No cards",inline=True)
+        e.add_field(name=f"epic {num_of_each[2]}/{len(self.epic)}",value=epic+int(num_of_each[2]==0)*"No cards",inline=True)
+        e.add_field(name=f"legandary {num_of_each[3]}/{len(self.legendary)}",value=legendary+int(num_of_each[3]==0)*"No cards",inline=True)
             
 
 
