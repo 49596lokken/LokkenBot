@@ -151,65 +151,22 @@ class Tcg(commands.Cog):
         inventory = [self.cards[i] for i in inventory]
         e = discord.Embed(title=f"Inventory of {player.name}",description=f"{len(inventory)} cards")
         common, rare, epic, legendary = "", "", "", ""
-        occurences = 0
-        last_card = inventory[0]
-        num_of_each = [int(i==0) for i in range(4)]
-        for card in inventory:
-            if card in self.common:
-                if card == last_card:
-                    occurences += 1
+        num_of_each = [0 for i in range(4)]
+        for card in self.cards:
+            if inventory.count(card):
+                if card in self.common:
+                    common += f"{inventory.count(card)}x{card}({self.cards.index(card)})\n"
+                    num_of_each[0]+=1
+                elif card in self.rare:
+                    rare += f"{inventory.count(card)}x{card}({self.cards.index(card)})\n"
+                    num_of_each[1]+=1
+                elif card in self.epic:
+                    epic += f"{inventory.count(card)}x{card}({self.cards.index(card)})\n"
+                    num_of_each[2]+=1
                 else:
-                    num_of_each[0] += 1
-                    common += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-                    occurences = 1
-                    last_card = card
-            elif card in self.rare:
-                if card == last_card:
-                    occurences += 1
-                else:
-                    num_of_each[1] += 1
-                    rare += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-                    occurences = 1
-                    last_card = card
-            elif card in self.epic:
-                if card == last_card:
-                    occurences += 1
-                else:
-                    num_of_each[2] += 1
-                    epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-                    occurences = 1
-                    last_card = card
-            else:
-                if card == last_card:
-                    occurences += 1
-                else:
-                    num_of_each[3] += 1
-                    legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-                    occurences = 1
-                    last_card = card
-        
-        if last_card in self.common:
-            common += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-        elif last_card in self.rare:
-            rare += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-            common += rare[:rare.index("\n")]
-            rare = rare[rare.index("\n")+1:]
-        elif last_card in self.epic:
-            epic += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-            common += rare[:rare.index("\n")]
-            rare = rare[rare.index("\n")+1:]
-            rare += epic[:epic.index("\n")]
-            epic = epic[epic.index("\n")+1:]
-        else:
-            legendary += f"{occurences}\u00d7{last_card}({self.cards.index(last_card)})\n"
-            common += rare[:rare.index("\n")]
-            rare = rare[rare.index("\n")+1:]
-            rare += epic[:epic.index("\n")]
-            epic = epic[epic.index("\n")+1:]
-            epic += legendary[:legendary.index("\n")]
-            legendary = legendary[legendary.index("\n")+1:]
+                    legendary+=f"{inventory.count(card)}x{card}({self.cards.index(card)})\n"
+                    num_of_each[3]+=1
 
-    
         e.add_field(name=f"common {num_of_each[0]}/{len(self.common)}", value=common+int(num_of_each[0]==0)*"No cards", inline=True)
         e.add_field(name=f"rare {num_of_each[1]}/{len(self.rare)}",value=rare+int(num_of_each[1]==0)*"No cards",inline=True)
         e.add_field(name=f"epic {num_of_each[2]}/{len(self.epic)}",value=epic+int(num_of_each[2]==0)*"No cards",inline=True)
