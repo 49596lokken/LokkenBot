@@ -14,7 +14,7 @@ class HelpCommand(commands.Cog, name="none"):
                 return(await command.can_run(ctx))
             except:
                 return (False)
-        return (command.cog.qualified_name.lower() != "lokken")
+        return (command.cog.qualified_name.lower() != "lokken" or await command.can_run(ctx))
 
 
     @commands.command(name="help", brief="shows this message", aliases=["h", "he", "hel", "hell"])

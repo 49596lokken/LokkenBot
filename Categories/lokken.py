@@ -102,7 +102,7 @@ class Lokken(commands.Cog):
     async def update_rewards(self, ctx, normal: int, big: int, huge: int, mega:int):
         msg = await self.bot.get_channel(768130720807124992).fetch_message(768131100995354645)
         await msg.edit(content=f"{normal}\n{big}\n{huge}\n{mega}")
-        lokkoin = await self.bot.get_cog("lokkoin")
+        lokkoin = self.bot.get_cog("lokkoin")
         await lokkoin.update_slots()
         await ctx.send("Done")
 
