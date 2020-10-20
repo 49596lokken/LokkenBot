@@ -28,6 +28,8 @@ class lokkoin(commands.Cog):
         self.daily_loop.cancel()
 
     async def update_slots(self):
+        while not self.bot.is_ready():
+             ...
         awards = await self.bot.get_channel(768130720807124992).fetch_message(768131100995354645)
         self.awards = []
         if not awards:
