@@ -34,7 +34,7 @@ class lokkoin(commands.Cog):
             raise(discord.errors.NotFound)
         for line in awards.content.split("\n"):
             self.awards.append(int(line))
-        self.slots.description=f"spins a slot machine\nIf you get a double match (any 2 the same) your bet is multiplied by {self.awards[0]}, unless the mathcing emojis are {self.slot_emojis[-1]} in which case your bet is multiplied by {self.awards[1]}.\nIf you get all 3 the same, your bet is multiplied by {self.slots[2]} unless all 3 are {self.slot_emojis[-1]} in which case the bet is multiplied by {self.slots[3]}"
+        self.slots.description=f"spins a slot machine\nIf you get a double match (any 2 the same) your bet is multiplied by {self.awards[0]}, unless the mathcing emojis are {self.slot_emojis[-1]} in which case your bet is multiplied by {self.awards[1]}.\nIf you get all 3 the same, your bet is multiplied by {self.awards[2]} unless all 3 are {self.slot_emojis[-1]} in which case the bet is multiplied by {self.awards[3]}"
     
     @tasks.loop(hours=24.0)
     async def daily_loop(self):
