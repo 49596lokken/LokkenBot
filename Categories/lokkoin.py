@@ -12,7 +12,7 @@ class lokkoin(commands.Cog):
         f = open("data/lokkoin/balances", "r")
         self.balances = {i[:i.index(" ")]:int(i[i.index(" "):-1]) for i in f}
         f.close()
-        self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F451", "\U0001F34B", "\U0001F48E"]
+        self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F451", "\U0001F34B", "\U0001FA99", "\U0001F48E"]
         self.claimed_today = []
         self.new_day = None
         coro = self.new_daily_coins()
