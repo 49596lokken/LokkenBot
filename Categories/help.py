@@ -7,6 +7,16 @@ class HelpCommand(commands.Cog, name="none"):
     def __init__(self, bot: commands.Bot):
         self.bot=bot
 
+
+    async def command_able(self, command,ctx):
+        if ctx.guild:
+            try:
+                return(await command.can_run(ctx))
+            except:
+                return (False)
+        return (command.cog.qualified_name.lower() != "lokken")
+
+
     @commands.command(name="help", brief="shows this message", aliases=["h", "he", "hel", "hell"])
     async def help_command(self, ctx, *request):
         request = [i.lower() for i in request]
@@ -24,14 +34,11 @@ class HelpCommand(commands.Cog, name="none"):
             if request[0] in categories:
                 description = ""
                 for command in categories[request[0]]:
-                    try:
-                        if await command.can_run(ctx):
-                            if command.brief:
-                                description += f"{command.name} - {command.brief}\n"
-                            else:
-                                description += f"{command.name}\n"
-                    except commands.MissingPermissions:
-                        pass
+                    if await self.command_able(command,ctx):
+                        if command.brief:
+                            description += f"{command.name} - {command.brief}\n"
+                        else:
+                            description += f"{command.name}\n"
                 if description:
                     e = discord.Embed(title=f"{self.bot.user.name} help for {request[0]} category", description=description)
                     e.set_footer(text=f"You can also try {ctx.prefix}help <command> for help on a command")
@@ -51,10 +58,7 @@ class HelpCommand(commands.Cog, name="none"):
                     #loops through the request for command groups
                     if not command in search_in:
                         break
-                    try:
-                        if not await search_in[command].can_run(ctx):
-                            break
-                    except commands.MissingPermissions:
+                    if not await self.command_able(search_in[command], ctx):
                         break
                     last_command = search_in[command]
                     full_command += command+" "
@@ -75,15 +79,12 @@ class HelpCommand(commands.Cog, name="none"):
                     e.title += " group"
                     value = ""
                     for command in search_in:
-                        try:
-                            if await command.can_run(ctx):
-                                value += command.name
-                                brief = command.brief
-                                if brief:
-                                    value += f" - {brief}"
-                                value += "\n"
-                        except commands.MissingPermissions:
-                            pass
+                        if await self.command_able(command,ctx):
+                            value += command.name
+                            brief = command.brief
+                            if brief:
+                                value += f" - {brief}"
+                            value += "\n"
                     e.add_field(name="commands", value=value)
                 else:
                     params, output, parameter_types = last_command.clean_params, "", ""
@@ -122,11 +123,11 @@ class HelpCommand(commands.Cog, name="none"):
                 value = ""
                 for command in categories[category]:
                     try:
-                        if await command.can_run(ctx):
+                        if await self.command_able(command,ctx):
                             if command.brief:
                                 value += f"{command.name} - {command.brief}\n"
                             else:
-                                value += f"{command.name}\n"
+                                value += f"{command.name}\n"                            
                     except:
                         pass
 

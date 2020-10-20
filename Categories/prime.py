@@ -13,10 +13,6 @@ class PrimeGame(commands.Cog, name="games"):
         f.close()
         self.reward = 50
 
-    async def cog_check(self,ctx):
-        if not ctx.guild:
-            return(False)
-        return(True)
     
 
     async def gen_next_prime(self):
@@ -33,7 +29,6 @@ class PrimeGame(commands.Cog, name="games"):
                 self.primes.append(test)
                 return
             test += 2
-        print(test)
 
     async def is_prime(self,number):
         if number in self.primes:
@@ -46,6 +41,7 @@ class PrimeGame(commands.Cog, name="games"):
             if number%i==0:
                 return(False)
 
+    @commands.guild_only()
     @commands.group(description="It's a prime number game. Will spam channels so certain permissions are required.\n\nThe object of the game is to send prime numbers to the chat without repeating until someone cannot or repeats. The game will not allow prime numbers over 1 000 000",invoke_without_command=True,pass_context=True)
     async def prime(self,ctx):
         ...
