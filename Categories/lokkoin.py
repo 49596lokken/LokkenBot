@@ -6,20 +6,21 @@ import random
 import typing
 import datetime
 
-
 class lokkoin(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         f = open("data/lokkoin/balances", "r")
         self.balances = {i[:i.index(" ")]:int(i[i.index(" "):-1]) for i in f}
         f.close()
-        self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F48E", "\U0001F34B"]
+        self.slot_emojis = ["\U0001F514", "\U0001F349", "\U0001F340", "\U0001F352", "\U0001F451", "\U0001F34B", "\U0001F48E"]
         self.claimed_today = []
         self.new_day = None
         coro = self.new_daily_coins()
         asyncio.ensure_future(coro)
         self.daily_loop.start()
-    
+        self.slots.description=f"spins a slot machine\nIf you get a double match (any 2 the same) your bet is trippled, unless the mathcing emojis are {self.slot_emojis[-1]} in which case your bet is multiplied by 5.\nIf you get all 3 the same, your bet is multiplied by 30 unless all 3 are {self.slot_emojis[-1]} in which case the bet is multiplied by 100"
+        
+
     def cog_unload(self):
         self.daily_loop.cancel()
 
@@ -97,7 +98,7 @@ class lokkoin(commands.Cog):
         await ctx.author.send(f"Successfully payed {payee.name} {amount} lokkoins!")
         await payee.send(f"{ctx.author.name}#{ctx.author.discriminator} has sent you {amount} lokkoins!")
     
-    @commands.command(description="spins a slot machine\nIf you get a double match (any 2 the same) your bet is trippled, unless the mathcing emojis are \U0001F34B in which case your bet is multiplied by 5.\nIf you get all 3 the same, your bet is multiplied by 30 unless all 3 are \U0001F34B in which case the bet is multiplied by 100")
+    @commands.command()
     async def slots(self, ctx, gamble:int=50):
         if not str(ctx.author.id) in self.balances:
             await ctx.send("In order to gamble, you need to be registered for lokkoins")
@@ -113,7 +114,7 @@ class lokkoin(commands.Cog):
             await asyncio.sleep(1)
             await msg.edit(content=msg.content.replace("\u2753", results[-1], 1))
         if results[0] == results[1] == results[2]:
-            if results[0] == "\U0001F34B":
+            if results[0] == self.slot_emojis[-1]:
                 await ctx.send("MEGA WIN!")
                 await self.add_coins(str(ctx.author.id), 100*gamble)
                 return
@@ -121,7 +122,7 @@ class lokkoin(commands.Cog):
             await self.add_coins(str(ctx.author.id), 30*gamble)
             return
         if results[0] == results[1]:
-            if results[0] == "\U0001F34B":
+            if results[0] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
                 await self.add_coins(str(ctx.author.id), 5*gamble)
                 return
@@ -129,7 +130,7 @@ class lokkoin(commands.Cog):
             await self.add_coins(str(ctx.author.id), 3*gamble)
             return
         if results[0] == results[2]:
-            if results[0] == "\U0001F34B":
+            if results[0] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
                 await self.add_coins(str(ctx.author.id), 5*gamble)
                 return
@@ -137,7 +138,7 @@ class lokkoin(commands.Cog):
             await self.add_coins(str(ctx.author.id), 3*gamble)
             return
         if results[2] == results[1]:
-            if results[2] == "\U0001F34B":
+            if results[2] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
                 await self.add_coins(str(ctx.author.id), 5*gamble)
                 return
@@ -156,4 +157,5 @@ class lokkoin(commands.Cog):
 
 
 def setup(bot):
+    
     bot.add_cog(lokkoin(bot))
