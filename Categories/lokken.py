@@ -96,6 +96,15 @@ class Lokken(commands.Cog):
                 balance = line[line.index(" "):-1]
                 output += f"{person.name} - {balance} coins\n"
         await ctx.send(output)
+    
+
+    @commands.command(description="Updates the rewards for winning slots. Can only be done as main bot") 
+    async def update_rewards(self, ctx, normal: int, big: int, huge: int, mega:int):
+        msg = await self.bot.get_channel(768130720807124992).fetch_message(768131100995354645)
+        await msg.edit(content=f"{normal}\n{big}\n{huge}\n{mega}")
+        lokkoin = await self.bot.get_cog("lokkoin")
+        await lokkoin.update_slots()
+        await ctx.send("Done")
 
                 
     

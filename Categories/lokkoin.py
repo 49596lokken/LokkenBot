@@ -18,13 +18,23 @@ class lokkoin(commands.Cog):
         coro = self.new_daily_coins()
         asyncio.ensure_future(coro)
         self.daily_loop.start()
+        self.awards = []
         self.slots.description=f"spins a slot machine\nIf you get a double match (any 2 the same) your bet is trippled, unless the mathcing emojis are {self.slot_emojis[-1]} in which case your bet is multiplied by 5.\nIf you get all 3 the same, your bet is multiplied by 30 unless all 3 are {self.slot_emojis[-1]} in which case the bet is multiplied by 100"
-        
+        coro = self.get_awards()
+        asyncio.ensure_future(coro)
+
 
     def cog_unload(self):
         self.daily_loop.cancel()
 
-
+    async def update_slots(self):
+        awards = await self.bot.get_channel(768130720807124992).fetch_message(768131100995354645)
+        self.awards = []
+        if not awards:
+            raise(discord.errors.NotFound)
+        for line in awards.content.split("\n"):
+            self.awards.append(int(line))
+    
     @tasks.loop(hours=24.0)
     async def daily_loop(self):
         await self.new_daily_coins()
@@ -116,34 +126,34 @@ class lokkoin(commands.Cog):
         if results[0] == results[1] == results[2]:
             if results[0] == self.slot_emojis[-1]:
                 await ctx.send("MEGA WIN!")
-                await self.add_coins(str(ctx.author.id), 100*gamble)
+                await self.add_coins(str(ctx.author.id), self.awards[3]*gamble)
                 return
             await ctx.send("HUGE WIN!")
-            await self.add_coins(str(ctx.author.id), 30*gamble)
+            await self.add_coins(str(ctx.author.id), self.awards[2]*gamble)
             return
         if results[0] == results[1]:
             if results[0] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
-                await self.add_coins(str(ctx.author.id), 5*gamble)
+                await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
             await ctx.send("normal win")
-            await self.add_coins(str(ctx.author.id), 3*gamble)
+            await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         if results[0] == results[2]:
             if results[0] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
-                await self.add_coins(str(ctx.author.id), 5*gamble)
+                await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
             await ctx.send("normal win")
-            await self.add_coins(str(ctx.author.id), 3*gamble)
+            await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         if results[2] == results[1]:
             if results[2] == self.slot_emojis[-1]:
                 await ctx.send("BIG WIN!")
-                await self.add_coins(str(ctx.author.id), 5*gamble)
+                await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
             await ctx.send("normal win")
-            await self.add_coins(str(ctx.author.id), 3*gamble)
+            await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         await ctx.send("Sorry, you lost...")
 
