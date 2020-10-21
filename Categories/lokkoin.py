@@ -154,7 +154,7 @@ class lokkoin(commands.Cog):
                 await msg.edit(content=msg.content.replace("spinning...", "BIG WIN!"))
                 await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
-            await msg.edit(msg.content.replace("spinning...", "normal win"))
+            await msg.edit(content=msg.content.replace("spinning...", "normal win"))
             await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         await msg.edit(content=msg.content.replace("spinning", "Sorry, you lost"))
