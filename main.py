@@ -50,7 +50,7 @@ async def on_ready():
     print(f'With ID: {bot.user.id}')
     print(f"On discord.py version {discord.__version__} in python {sys.version}")
     await bot.change_presence(activity=discord.Game("ping me for prefix"))
-categories = os.listdir("Categories")[:-1]
+categories = os.listdir("Categories")
 for category in categories:
     if category.endswith(".py"):
         try:
