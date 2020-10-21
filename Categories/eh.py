@@ -8,7 +8,13 @@ class eh(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, exception):
+    async def on_command_error(self, ctx, exception:Exception):
+        error = getattr(exception, "original", exception)
+        if isinstance(error, FileNotFoundError):
+            f=open(error.filename, "w+")
+            f.close()
+            await ctx.command.invoke(ctx)
+            return
         if exception.args[0].endswith("run this command."):
             if ctx.author.id == 360493765154045952:
                 ctx.command.checks = []
