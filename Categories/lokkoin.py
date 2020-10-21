@@ -126,37 +126,37 @@ class lokkoin(commands.Cog):
             await msg.edit(content=msg.content.replace("\u2753", results[-1], 1))
         if results[0] == results[1] == results[2]:
             if results[0] == self.slot_emojis[-1]:
-                await ctx.send("MEGA WIN!")
+                await msg.edit(msg.content.replace("spinning...", "MEGA WIN!"))
                 await self.add_coins(str(ctx.author.id), self.awards[3]*gamble)
                 return
-            await ctx.send("HUGE WIN!")
+            await msg.edit(msg.content.replace("spinning...", "HUGE WIN!"))
             await self.add_coins(str(ctx.author.id), self.awards[2]*gamble)
             return
         if results[0] == results[1]:
             if results[0] == self.slot_emojis[-1]:
-                await ctx.send("BIG WIN!")
+                await msg.edit(msg.content.replace("spinning...", "BIG WIN!"))
                 await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
-            await ctx.send("normal win")
+            await msg.edit(msg.content.replace("spinning...", "normal win"))
             await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         if results[0] == results[2]:
             if results[0] == self.slot_emojis[-1]:
-                await ctx.send("BIG WIN!")
+                await msg.edit(msg.content.replace("spinning...", "BIG WIN!"))
                 await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
-            await ctx.send("normal win")
+            await msg.edit(msg.content.replace("spinning...", "normal win"))
             await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
         if results[2] == results[1]:
             if results[2] == self.slot_emojis[-1]:
-                await ctx.send("BIG WIN!")
+                await msg.edit(msg.content.replace("spinning...", "BIG WIN!"))
                 await self.add_coins(str(ctx.author.id), self.awards[1]*gamble)
                 return
-            await ctx.send("normal win")
+            await ctx.send(msg.content.replace("spinning...", "normal win"))
             await self.add_coins(str(ctx.author.id), self.awards[0]*gamble)
             return
-        await ctx.send("Sorry, you lost...")
+        await msg.edit(msg.content.replace("spinning", "Sorry, you lost..."))
 
 
 
