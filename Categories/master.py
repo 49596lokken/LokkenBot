@@ -9,7 +9,7 @@ class Games(commands.Cog):
         self.bot=bot
         self.pieces = ["\U0001F534", "\U0001F7E2", "\U0001F535", "\U0001F7E1", "\U0001F7E3", "\U000026AA"]
         self.codes = ["r", "g", "b", "y", "p", "w"]
-        self.indicators = ["\u25AA\ufe0f", "\u25AB\ufe0f"]
+        self.indicators = ["\u25fb\ufe0f", "\u25fc\ufe0f"]
         temp = [f"{self.pieces[i]} ({self.codes[i]})\n" for i in range(len(self.pieces))]
         self.valid_pieces = ""
         for line in temp:
@@ -58,7 +58,7 @@ class Games(commands.Cog):
                 return(False)
             if len(message.content) != 4:
                 return False
-            message.content = [i for i in message.content]
+            message.content = [i.lower() for i in message.content]
             try:
                 for i in range(len(message.content)):
                     message.content[i]=self.validate_piece(message.content[i])
