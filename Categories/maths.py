@@ -66,7 +66,7 @@ class maths(commands.Cog):
         output = output[:-1] + f" Divided by {denominator[0]}x+{denominator[1]} = \n "
         for i in range(len(answer)):
             output += f"{answer[i]}x^{len(answer)-1-i}+"
-        output = output.replace("^1", "").replace("x^0", "").replace("+-", "-").replace("+1x", "+x").replace("-1x", "-x").replace(" 1x", " x").replace("\n ", "\n")
+        output = output.replace("^1+", "+").replace("x^0", "").replace("+-", "-").replace("+1x", "+x").replace("-1x", "-x").replace(" 1x", " x").replace("\n ", "\n")
         await ctx.send(f"{output[:-1]} remainder {numerator[-1]-being_taken}") 
 
     @commands.command(description="Simplifies a fraction")
