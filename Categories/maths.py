@@ -58,13 +58,15 @@ class maths(commands.Cog):
         answer = []
         for i in numerator[:-1]:
             being_taken = i-being_taken
-            print(being_taken)
             answer.append(being_taken/denominator[0])
             being_taken = (being_taken*denominator[1])/denominator[0]
         output = " "
+        for i in range(len(numerator)):
+            output += f"{numerator[i]}x^{len(numerator)-1-i}+"
+        output = output[:-1] + f" Divided by {denominator[0]}x+{denominator[1]} = \n "
         for i in range(len(answer)):
-            output += f"{answer[i]}x^{len(answer)-1-i} +"
-        output = output.replace("^1", "").replace("x^0", "").replace(" ", "").replace("+-", "-").replace("+1x", "+x").replace("-1x", "-x")
+            output += f"{answer[i]}x^{len(answer)-1-i}+"
+        output = output.replace("^1", "").replace("x^0", "").replace("+-", "-").replace("+1x", "+x").replace("-1x", "-x").replace(" 1x", " x").replace("\n ", "\n")
         await ctx.send(f"{output[:-1]} remainder {numerator[-1]-being_taken}") 
 
     @commands.command(description="Simplifies a fraction")
@@ -81,7 +83,6 @@ class maths(commands.Cog):
             if not i.isdigit:
                 await ctx.send(f"{i} is not a number")
                 return
-        print((output))
         output = Fraction(int(output[0]), int(output[1]))
         await ctx.send(f"The fraction {fraction} is equivelent to {output}")
 
