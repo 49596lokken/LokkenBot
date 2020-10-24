@@ -64,7 +64,7 @@ class maths(commands.Cog):
         output = " "
         for i in range(len(answer)):
             output += f"{answer[i]}x^{len(answer)-1-i} +"
-        output = output.replace("^1", "").replace("x^0", "").replace(" 1x", " x").replace(" ", "").replace("+-", " -")
+        output = output.replace("^1", "").replace("x^0", "").replace(" ", "").replace("+-", "-").replace("+1x", "+x").replace("-1x", "-x")
         await ctx.send(f"{output[:-1]} remainder {numerator[-1]-being_taken}") 
 
     @commands.command(description="Simplifies a fraction")
