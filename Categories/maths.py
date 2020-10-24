@@ -95,7 +95,9 @@ class Fraction:
     def __str__(self):
         if self.denominator == 1:
             return(str(self.numerator))
-        return(f"({self.numerator}/{self.denominator})")
+        if self.numerator > 0:
+            return(f"({self.numerator}/{self.denominator})")
+        return(f"-({abs(self.numerator//1)}/{self.denominator})")
     
     def simplify(self):
         cf = hcf(self.denominator, self.numerator)
