@@ -85,6 +85,8 @@ class maths(commands.Cog):
                 return
         output = Fraction(int(output[0]), int(output[1]))
         await ctx.send(f"The fraction {fraction} is equivelent to {output}")
+    
+    
 
 class Fraction:
     def __init__(self,numerator,denominator):
