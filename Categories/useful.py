@@ -30,6 +30,7 @@ class useful(commands.Cog):
     async def encode(self, ctx, password, *,message):
         if len(password) < 8:
             await ctx.send("Your password has to be at least 8 characters long")
+            return
         message = message[1:]   
         for char in password:
             if not char in self.all_characters:
