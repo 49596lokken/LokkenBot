@@ -36,7 +36,7 @@ def findprefix(bot, message):
 bot = commands.Bot(command_prefix=findprefix, case_insensitive=True, help_command=None,intents=intents)
 
 @bot.event
-async def on_message(message: discord.Message):
+async def on_message(message):
     if len(message.mentions) == 1:
         if message.mentions[0] == bot.user and not message.reference and message.content.index("<") == 0 and message.content.index(">") == len(message.content)-1 and not ("<" in message.content[1:]):
             await message.channel.send(f"The prefix is \"{findprefix(bot, message)}\"")
